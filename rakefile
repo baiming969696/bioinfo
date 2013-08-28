@@ -1,0 +1,49 @@
+# encoding: UTF-8
+$:.push File.expand_path("../lib", __FILE__)
+require 'bioinfo'
+
+# irb
+desc "Run bioinfo in irb"
+task :irb do
+  system "irb -I #{File.expand_path("../lib", __FILE__)} -r bioinfo -r irb/completion --simple-prompt"
+end
+
+# test
+require 'rake/testtask'
+Rake::TestTask.new do |t|
+   t.libs << "lib"
+   t.test_files = FileList["test/**/test*.rb"]
+   t.verbose = false
+end
+
+# clear
+desc "Clear the directory"
+task :clear do
+  # Specific
+  ["doc", ".yardoc", "tmp", "data"].each do |f|
+    FileUtils.rm_r(f) if File.exists?(f)
+  end
+
+  # Pattern
+  FileList["*.gem"].each do |f|
+    FileUtils.rm_r(f)
+  end
+end
+
+# gem
+desc "Build the gem"
+task :gem do
+  system("gem build #{File.dirname(__FILE__)}" + "/bioinfo.gemspec")
+end
+
+# install
+desc "Install the gem"
+task :install => :gem do
+  system("gem install bioinfo-#{Bioinfo::VERSION}.gem --no-rdoc --no-ri")
+end
+
+# uninstall
+desc "Uninstall the gem"
+task :uninstall do
+  system("gem uninstall bioinfo")
+end
