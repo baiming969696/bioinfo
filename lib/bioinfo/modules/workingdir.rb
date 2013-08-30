@@ -13,17 +13,9 @@ module Bioinfo::Modules::WorkingDir
   #
   # If not exists, the method will try to mkdir one.
   #
-  # @param [String] val
+  # @param [String] val target working directory
   def wd=(val)
+    Bioinfo::Utility::mkdir_with_parents(val)
     @wd = val
-
-    dirs = []
-    until Dir.exists?(val)
-      dirs<<val
-      val = File.dirname(val)
-      # raise "Directory too deep" if dirs.size > 64
-    end
-
-    dirs.reverse.each { |d| Dir.mkdir(d) }
   end
 end

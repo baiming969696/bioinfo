@@ -7,5 +7,5 @@ module Bioinfo::Scripts
   SCRIPTS = {
   }
 
-  Bioinfo.set_autoloaders(SCRIPTS, self)
+  Bioinfo::Utility.set_autoloaders(SCRIPTS, self)
 end

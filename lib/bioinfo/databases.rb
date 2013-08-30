@@ -8,5 +8,5 @@ module Bioinfo::Databases
     HGNC:"bioinfo/databases/hgnc"
   }
 
-  Bioinfo.set_autoloaders(DATABASES, self)
+  Bioinfo::Utility.set_autoloaders(DATABASES, self)
 end

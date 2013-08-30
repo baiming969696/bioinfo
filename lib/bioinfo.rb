@@ -10,23 +10,22 @@ module Bioinfo
   WORKING_DIRECTORY = File.expand_path("../..",__FILE__)
 
   # autoloaders - modules
+  self.autoload(:Utility, "bioinfo/utility")
   self.autoload(:Modules, "bioinfo/modules")
   self.autoload(:Databases, "bioinfo/databases")
   self.autoload(:Scripts, "bioinfo/scripts")
 
   # autoloaders - classes
+  self.autoload(:Logger, "bioinfo/logger")
   self.autoload(:Script, "bioinfo/script")
 
   class << self
-    # Set autoloaders for given context
-    # @param [Hash] hash module-path pairs
-    # @param [Module] context in which to set the autoloaders
-    def set_autoloaders(hash, context)
-      hash.each { |mod, path| context.autoload(mod, path) }
-    end
-
-    # Include modules after self.set_autoloaders
     include Modules::WorkingDir
+
+    # Get the instance of Bioinfo::Logger
+    def log
+      Logger.instance
+    end
   end
 end
 

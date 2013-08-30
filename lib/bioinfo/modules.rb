@@ -8,5 +8,5 @@ module Bioinfo::Modules
     WorkingDir:"bioinfo/modules/workingdir"
   }
 
-  Bioinfo.set_autoloaders(MODULES, self)
+  Bioinfo::Utility.set_autoloaders(MODULES, self)
 end
