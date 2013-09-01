@@ -4,6 +4,7 @@ History
 ### 0.0.2 2013-09-02
 * 1 major enhancement
   * Add Bioinfo::Utility.request for http requests
+  * TODO: Add Bioinfo::Database::HGNC
 * 1 minor enhancement
   * Optimized the initialization of Bioinfo and got rid of ./_version.rb
 

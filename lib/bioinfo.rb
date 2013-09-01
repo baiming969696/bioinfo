@@ -6,14 +6,16 @@
 # == Example Usage
 #
 # === Initialization
-# Call {Bioinfo.init} to initialize Bioinfo with conventions at first.
+# It's unnecessary to initialize Bioinfo after requiring since Bioinfo follows
+# the principle "Convention over Configuration". 
 #   require 'bioinfo'
-#   Bioinfo.init
+#   Bioinfo.init # unnecessary but no harm
 #
 # Sometimes custom initialization fits your need better. Write the process 
-# according to {Bioinfo.init} to make sure that nothing is left uninitiated 
-# which may make some problems hard to debug.
+# according to {Bioinfo.init} to make sure that anything left uninitiated will 
+# not effect your final result.
 #   require 'bioinfo'
+#
 #   Bioinfo.wd = "/home/aidistan/bioinfo"
 #   Bioinfo.log.level = Logger::WARN
 #
@@ -58,3 +60,6 @@ module Bioinfo
     Utility::NetworkOption.instance
   end
 end
+
+# Necessary initialization
+Bioinfo.wd = Bioinfo::DEFAULT_WORKING_DIRECTORY
