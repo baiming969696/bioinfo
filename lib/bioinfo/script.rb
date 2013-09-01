@@ -13,6 +13,6 @@ class Bioinfo::Script
 
   # Initailize instance varaibles
   def initialize
-    self.wd = Bioinfo.wd + "/tmp/" + self.class.to_s
+    self.wd = File.expand_path("tmp/" + self.class.to_s, Bioinfo.wd)
   end
 end

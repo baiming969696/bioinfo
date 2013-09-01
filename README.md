@@ -3,27 +3,90 @@ Bioinfo
 
 For bioinformaticians.
 
+
 ## Coding Style
 
 Practically follow [ruby-style-guide](http://aidistan.github.io/ruby-style-guide/)
 , a community-driven ruby coding style guide.
 
-### Comment Annotations
+Following is the list of some __possible__ differences.
 
-* TODO: To note missing features or functionality that should be added at a 
-  later date.
+### Comments
 
-* FIXME: To note broken code that needs to be fixed.
+* Write self-documenting code for developers.
 
-* OPTIMIZE: To note slow or inefficient code that may cause performance 
-  problems.
+* Write YARD document within the code to generate API docs and example usages.
 
-* HACK: To note code smells where questionable coding practices were used 
-  and should be refactored away.
+	* Use (part of) these sections to describe a class or module
 
-* REVIEW: To note anything that should be looked at to confirm it is working 
-  as intended. For example: REVIEW: Are we sure this is how the client does 
-  X currently?
+		* Overview (default) : briefly describe the purpose and the usage
+
+		* Mechanism
+
+		* Example Usage
+
+		* Reference
+
+* Use these and only these comment annotations,
+
+	* TODO: To note missing features or functionality that should be added at 
+	a later date.
+
+	* FIXME: To note broken code that needs to be fixed.
+
+	* OPTIMIZE: To note slow or inefficient code that may cause performance 
+	  problems.
+
+	* HACK: To note code smells where questionable coding practices were used 
+	  and should be refactored away.
+
+	* REVIEW: To note anything that should be looked at to confirm it is
+	  working as intended. For example: REVIEW: Are we sure this is how the 
+	  client does X currently?
+
+### Classes & Modules
+
+* Define VERSION for each script or database class. And write the changes in 
+  _HISTORY.md_
+
+* Use this structure in module/class definitions
+
+		class MyClass
+		  # special handling, such as autoload, go first if has any
+		  self.autoload(:Utility, "myclass/utility")
+
+		  # extends and includes are the first most time
+		  extend SomeModule
+		  include AnotherModule
+
+		  # constants are next
+		  SOME_CONSTANT = 20
+
+		  # afterwards we have attribute macros
+		  attr_reader :name
+
+		  # followed by other macros (if any)
+		  validates :name
+
+		  # public class methods are next in line
+		  def self.some_method
+		  end
+
+		  # followed by public instance methods
+		  def some_method
+		  end
+
+		  # protected and private methods are grouped near the end
+		  protected
+
+		  def some_protected_method
+		  end
+
+		  private
+
+		  def some_private_method
+		  end
+		end
 
 
 ## Test Style

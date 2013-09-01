@@ -21,13 +21,5 @@ class Bioinfo_Modules_WorkingDir_Test < Test::Unit::TestCase
       assert(Dir.exist?(wd), "Working directory not created.")
       Dir.delete(wd)
     end
-
-    should "create working directory recursively if in need" do
-      wd = File.expand_path("../tmp/tmp" ,__FILE__)
-      self.wd = wd
-      assert(Dir.exist?(wd), "Working directory not created recursively.")
-      Dir.delete(wd)
-      Dir.delete(File.dirname(wd))
-    end
   end
 end

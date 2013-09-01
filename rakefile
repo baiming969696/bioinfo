@@ -1,6 +1,5 @@
 # encoding: UTF-8
-$:.push File.expand_path("../lib", __FILE__)
-require 'bioinfo'
+# $:.push File.expand_path("../lib", __FILE__)
 
 # irb
 desc "Run bioinfo in irb"
@@ -20,7 +19,7 @@ end
 desc "Clear the directory"
 task :clear do
   # Specific
-  ["doc", ".yardoc", "tmp", "data"].each do |f|
+  [".yardoc", "doc", "log", "tmp", "data"].each do |f|
     FileUtils.rm_r(f) if File.exists?(f)
   end
 
@@ -39,6 +38,7 @@ end
 # install
 desc "Install the gem"
 task :install => :gem do
+  require './_version'
   system("gem install bioinfo-#{Bioinfo::VERSION}.gem --no-rdoc --no-ri")
 end
 

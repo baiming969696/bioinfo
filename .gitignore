@@ -5,5 +5,4 @@ data
 
 # YARD artifacts
 .yardoc
-_yardoc
 doc/

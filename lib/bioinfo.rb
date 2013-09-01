@@ -1,14 +1,23 @@
-﻿#!/usr/bin/env ruby
+#!/usr/bin/env ruby
 # encoding: UTF-8
 
 # Top level namespace of Bioinfo
+#
+# == Example Usage
+#
+# === Initialization
+# Call {Bioinfo.init} to initialize Bioinfo with conventions at first.
+#   require 'bioinfo'
+#   Bioinfo.init
+#
+# Sometimes custom initialization fits your need better. Write the process 
+# according to {Bioinfo.init} to make sure that nothing is left uninitiated 
+# which may make some problems hard to debug.
+#   require 'bioinfo'
+#   Bioinfo.wd = "/home/aidistan/bioinfo"
+#   Bioinfo.log.level = Logger::WARN
+#
 module Bioinfo
-	# Current version of Bioinfo
-	VERSION = "0.0.1"
-
-  # Default working directory
-  WORKING_DIRECTORY = File.expand_path("../..",__FILE__)
-
   # autoloaders - modules
   self.autoload(:Utility, "bioinfo/utility")
   self.autoload(:Modules, "bioinfo/modules")
@@ -19,15 +28,28 @@ module Bioinfo
   self.autoload(:Logger, "bioinfo/logger")
   self.autoload(:Script, "bioinfo/script")
 
-  class << self
-    include Modules::WorkingDir
+  extend Modules::WorkingDir
 
-    # Get the instance of Bioinfo::Logger
-    def log
+	# Current version of Bioinfo
+	VERSION = "0.0.1"
+
+  # Default working directory
+  DEFAULT_WORKING_DIRECTORY = File.expand_path("../..",__FILE__)
+
+  module_function
+
+  # Get the instance of Bioinfo::Logger
+  # @return [Logger] the instance of Bioinfo::Logger
+  def log
       Logger.instance
-    end
+  end
+
+  # Default initialization
+  # @return [Bioinfo] the Bioinfo module itself
+  def init 
+    Bioinfo.wd = Bioinfo::DEFAULT_WORKING_DIRECTORY
+    Bioinfo.log.level = Logger::DEBUG
+    return self
   end
 end
 
-# Initialize
-Bioinfo.wd = Bioinfo::WORKING_DIRECTORY
