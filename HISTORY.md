@@ -1,6 +1,10 @@
 History
 ===============
 
+### 0.0.2 2013-09-02
+* 1 major enhancement
+  * Add Bioinfo::Utility.request for http requests
+
 ### 0.0.1 2013-09-01
 * 2 major enhancement
 	* Determined the hierarchy of lib files of Bioinfo gem
@@ -20,4 +24,3 @@ History
 		* tmp as the temporary directory of scripts
 * 1 minor enhancement
 	* Added ./_version.rb to avoid requiring the whole gem and generating temporary files
-
