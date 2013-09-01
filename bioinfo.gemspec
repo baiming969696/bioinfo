@@ -1,7 +1,7 @@
 # encoding: UTF-8
-# $:.push File.expand_path("../lib", __FILE__)
+$:.push File.expand_path("../lib", __FILE__)
 require 'rake'
-require './_version'
+require 'bioinfo'
 
 Gem::Specification.new do |s|
   s.name        = "bioinfo"
@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://aidistan.github.io/bioinfo/"
 
   s.files         = FileList['lib/**/*', 'test/**/*', 
-                             '.yardopts', 'rakefile', '_version.rb',
+                             '.yardopts', 'rakefile', 
                              'LICENSE', '*.md', ].to_a
                              # 'data/test_sets/*'
   s.require_paths = ["lib"]

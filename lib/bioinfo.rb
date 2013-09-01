@@ -38,12 +38,6 @@ module Bioinfo
 
   module_function
 
-  # Get the instance of Bioinfo::Logger
-  # @return [Logger] the instance of Bioinfo::Logger
-  def log
-      Logger.instance
-  end
-
   # Default initialization
   # @return [Bioinfo] the Bioinfo module itself
   def init 
@@ -51,5 +45,16 @@ module Bioinfo
     Bioinfo.log.level = Logger::DEBUG
     return self
   end
-end
 
+  # Get the instance of Bioinfo::Logger
+  # @return [Bioinfo::Logger]
+  def log
+    Logger.instance
+  end
+
+  # Get the instance of Bioinfo::Utility::NetworkOption
+  # @return [Bioinfo::Utility::NetworkOption]
+  def opt_network
+    Utility::NetworkOption.instance
+  end
+end

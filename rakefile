@@ -1,5 +1,5 @@
 # encoding: UTF-8
-# $:.push File.expand_path("../lib", __FILE__)
+$:.push File.expand_path("../lib", __FILE__)
 
 # irb
 desc "Run bioinfo in irb"
@@ -38,7 +38,7 @@ end
 # install
 desc "Install the gem"
 task :install => :gem do
-  require './_version'
+  require 'bioinfo'
   system("gem install bioinfo-#{Bioinfo::VERSION}.gem --no-rdoc --no-ri")
 end
 
