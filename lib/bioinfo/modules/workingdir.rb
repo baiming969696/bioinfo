@@ -5,8 +5,9 @@
 module Bioinfo::Modules::WorkingDir
   # Get current working directory
   # @return [String]
+  # @raise RuntimeError Raised if @wd undefined
   def wd
-    @wd;
+    @wd or raise "The working directory of #{self} is undefined."
   end
 
   # Set current working directory

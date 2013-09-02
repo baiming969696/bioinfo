@@ -40,14 +40,6 @@ module Bioinfo
 
   module_function
 
-  # Default initialization
-  # @return [Bioinfo] the Bioinfo module itself
-  def init 
-    Bioinfo.wd = Bioinfo::DEFAULT_WORKING_DIRECTORY
-    Bioinfo.log.level = Logger::DEBUG
-    return self
-  end
-
   # Get the instance of Bioinfo::Logger
   # @return [Bioinfo::Logger]
   def log
@@ -58,6 +50,14 @@ module Bioinfo
   # @return [Bioinfo::Utility::NetworkOption]
   def opt_network
     Utility::NetworkOption.instance
+  end
+
+  # Default initialization
+  # @return [Bioinfo] the Bioinfo module itself
+  def init 
+    Bioinfo.wd = Bioinfo::DEFAULT_WORKING_DIRECTORY
+    Bioinfo.log.level = Logger::DEBUG
+    return self
   end
 end
 
