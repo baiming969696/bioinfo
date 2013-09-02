@@ -33,7 +33,7 @@ class Bioinfo_Test < Test::Unit::TestCase
 
   context "Bioinfo::Logger" do
     should "respond to methods which std-lig Logger does" do
-      assert(Bioinfo.log.fatal?)
+      assert(Bioinfo.log.level)
     end
     should "not respond to methods which std-lig Logger does not" do
       assert_raise(NoMethodError) { Bioinfo.log.definitely_no_this_method }

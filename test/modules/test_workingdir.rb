@@ -9,9 +9,9 @@ class Bioinfo_Modules_WorkingDir_Test < Test::Unit::TestCase
   
   context "WorkingDirNeeded module" do
     should "change @wd if :wd= called" do
-      assert_equal(self.wd, nil, "@wd not nil at first.")
+      assert_raise(RuntimeError, "@wd initialized at first") { self.wd }
       self.wd = File.dirname(__FILE__)
-      assert_not_equal(self.wd, nil, "@wd not changed.")
+      assert_nothing_raised ("@wd not changed.") { self.wd }
     end
 
     should "create working directory if @wd not exist" do

@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.test_files    = FileList['test/**/*'].to_a
 
-  s.add_development_dependency "rake", ">= 2.0.0"
   s.add_development_dependency "yard", ">= 0.8.6"
   s.add_development_dependency "shoulda-context", ">= 1.1.5" # for tests
 end

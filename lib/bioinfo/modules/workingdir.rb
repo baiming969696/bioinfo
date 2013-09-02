@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
+require 'fileutils'
 
 # Provide setter and getter for working directory variable @wd
 module Bioinfo::Modules::WorkingDir
@@ -16,7 +17,7 @@ module Bioinfo::Modules::WorkingDir
   #
   # @param [String] val target working directory
   def wd=(val)
-    Bioinfo::Utility::mkdir_with_parents(val)
+    FileUtils.mkdir_p(val)
     @wd = val
   end
 end

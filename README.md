@@ -25,6 +25,8 @@ Following is the list of some __possible__ differences.
 
 		* Example Usage
 
+		* Supplementary : such as the brief introduction of the database (this subtitle could be changed)
+
 		* Reference
 
 * Use these and only these comment annotations,

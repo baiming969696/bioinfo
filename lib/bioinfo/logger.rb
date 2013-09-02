@@ -28,7 +28,7 @@ class Bioinfo::Logger
 
   # @private
   def inspect
-    "#<Bioinfo::Logger:singleton>"
+    "<Bioinfo::Logger singleton>"
   end
 
   # @private

@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'rake'
 $:.push File.expand_path("../lib", __FILE__)
 
 # irb
@@ -10,22 +11,21 @@ end
 # test
 require 'rake/testtask'
 Rake::TestTask.new do |t|
-   t.libs << "lib"
-   t.test_files = FileList["test/**/test*.rb"]
-   t.verbose = false
+  t.test_files = FileList["test/**/test*.rb"]
 end
 
-# clear
-desc "Clear the directory"
-task :clear do
-  # Specific
-  [".yardoc", "doc", "log", "tmp", "data"].each do |f|
-    FileUtils.rm_r(f) if File.exists?(f)
-  end
+# issue
+desc "Run tests for current issue"
+task :issue do
+  current_issue = "test/databases/test_hgnc.rb"
+  system ("rake test TEST=" + current_issue)
+end
 
-  # Pattern
-  FileList["*.gem"].each do |f|
-    FileUtils.rm_r(f)
+# clean
+desc "Clean the directory"
+task :clean do
+  [".yardoc", "doc", "log", "tmp", "data", "*.gem"].each do |f|
+    FileUtils.rm_r(f) rescue nil
   end
 end
 
