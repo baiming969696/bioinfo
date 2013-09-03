@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Bioinfo by aidistan</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Bioinfo</h1>
+          <h2>For bioinformaticians.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/aidistan/bioinfo/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/aidistan/bioinfo/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/aidistan/bioinfo" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a name="bioinfo" class="anchor" href="#bioinfo"><span class="octicon octicon-link"></span></a>Bioinfo</h1>
+
+<p>For bioinformaticians.</p>
+
+<h2>
+<a name="coding-style" class="anchor" href="#coding-style"><span class="octicon octicon-link"></span></a>Coding Style</h2>
+
+<p>Practically follow <a href="http://aidistan.github.io/ruby-style-guide/">ruby-style-guide</a>
+, a community-driven ruby coding style guide.</p>
+
+<p>Following is the list of some <strong>possible</strong> differences.</p>
+
+<h3>
+<a name="comments" class="anchor" href="#comments"><span class="octicon octicon-link"></span></a>Comments</h3>
+
+<ul>
+<li><p>Write self-documenting code for developers.</p></li>
+<li>
+<p>Write YARD document within the code to generate API docs and example usages.</p>
+
+<ul>
+<li>
+<p>Use (part of) these sections to describe a class or module</p>
+
+<ul>
+<li>Overview (default) : briefly describe the purpose and the usage</li>
+<li>Mechanism</li>
+<li>Example Usage</li>
+<li>Supplementary : such as the brief introduction of the database (this subtitle could be changed)</li>
+<li>Reference</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Use these and only these comment annotations,</p>
+
+<ul>
+<li>TODO: To note missing features or functionality that should be added at 
+a later date.</li>
+<li>FIXME: To note broken code that needs to be fixed.</li>
+<li>OPTIMIZE: To note slow or inefficient code that may cause performance 
+problems.</li>
+<li>HACK: To note code smells where questionable coding practices were used 
+and should be refactored away.</li>
+<li>REVIEW: To note anything that should be looked at to confirm it is
+working as intended. For example: REVIEW: Are we sure this is how the 
+client does X currently?</li>
+</ul>
+</li>
+</ul><h3>
+<a name="classes--modules" class="anchor" href="#classes--modules"><span class="octicon octicon-link"></span></a>Classes &amp; Modules</h3>
+
+<ul>
+<li><p>Define VERSION for each script or database class. And write the changes in 
+<em>HISTORY.md</em></p></li>
+<li>
+<p>Use this structure in module/class definitions</p>
+
+<pre><code>class MyClass
+  # special handling, such as autoload, go first if has any
+  self.autoload(:Utility, "myclass/utility")
+
+  # extends and includes are the first most time
+  extend SomeModule
+  include AnotherModule
+
+  # constants are next
+  SOME_CONSTANT = 20
+
+  # afterwards we have attribute macros
+  attr_reader :name
+
+  # followed by other macros (if any)
+  validates :name
+
+  # public class methods are next in line
+  def self.some_method
+  end
+
+  # followed by public instance methods
+  def some_method
+  end
+
+  # protected and private methods are grouped near the end
+  protected
+
+  def some_protected_method
+  end
+
+  private
+
+  def some_private_method
+  end
+end
+</code></pre>
+</li>
+</ul><h2>
+<a name="test-style" class="anchor" href="#test-style"><span class="octicon octicon-link"></span></a>Test Style</h2>
+
+<p>Having no explicit map of our gem, we just add new Script or Module when we 
+need it, which make the popular test suite <em>RSepc</em> doesn't suit our need 
+quite well.</p>
+
+<p>In such case, we choose to write our tests with the std-lib <strong>test/unit</strong> and 
+<strong>shoulda-context</strong> gem.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Copyright 2013 Aidi Stan under the MIT license.</p>
+        </section>
+
+        <footer>
+          Bioinfo is maintained by <a href="https://github.com/aidistan">aidistan</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
