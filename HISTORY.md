@@ -5,8 +5,9 @@ History
 * 2 major enhancement
   * Added Bioinfo::Utility.request for http requests
   * Added Bioinfo::Database::HGNC
-* 1 minor enhancement
+* 2 minor enhancement
   * Optimized the initialization of Bioinfo and got rid of ./_version.rb
+  * Improved YARD documents
 
 ### 0.0.1 2013-09-01
 * 2 major enhancement

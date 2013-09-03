@@ -10,7 +10,6 @@ class Bioinfo::Script
   def run
     raise NotImplementedError, "Please overload"
   end
-
   # Initailize instance varaibles
   def initialize
     self.wd = File.expand_path("tmp/" + self.class.to_s.scan(/(?<=::)\w+\z/)[0], Bioinfo.wd)

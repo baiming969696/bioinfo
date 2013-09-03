@@ -27,20 +27,20 @@ class Bioinfo::Logger
   include Bioinfo::Modules::WorkingDir
 
   # Get the logger linked to STDOUT
+  # @return [::Logger]
   attr_reader :screen_logger
   # Get the logger linked to log file
+  # @return [::Logger]
   attr_reader :file_logger
 
   # @private
   def inspect
     "#<Bioinfo::Logger.singleton>"
   end
-
   # @private
   def to_s
     inspect
   end
-
   def respond_to?(sym)
     return true if super(sym)
     return @screen_logger.respond_to?(sym)
@@ -54,7 +54,6 @@ class Bioinfo::Logger
     @screen_logger = Logger.new(STDOUT)
     @file_logger = Logger.new(File.expand_path(Bioinfo::Utility.get_timestamp + ".log", self.wd))
   end
-
   # Transmit method call if std-lib Logger can respond to it
   def method_missing(symbol, *args, &block)
     if @screen_logger.respond_to?(symbol)

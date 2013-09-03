@@ -6,6 +6,16 @@ require 'net/http'
 
 # Utilities defined here to make Bioinfo namespace simple and tidy
 module Bioinfo::Utility
+  # Options for network connection
+  # @example
+  #   Bioinfo.opt_network.timeout = 60 # 60 senconds
+  #   
+  NetworkOption = Struct.new(:timeout, :proxy) do
+    include Singleton
+  end
+  # Error class representing HTTP errors
+  class HTTPError < RuntimeError; end
+
   module_function
 
   # Set autoloaders for given context
@@ -14,7 +24,6 @@ module Bioinfo::Utility
   def set_autoloaders(hash, context)
     hash.each { |mod, path| context.autoload(mod, path) }
   end
-
   # Get a timestamp string as a legal file name
   # @return [String]
   # @example
@@ -22,18 +31,6 @@ module Bioinfo::Utility
   def get_timestamp
     Time.now.to_s.split(" ")[0..1].join("_").gsub(/-|:/,"")
   end
-
-  # Options for network connection
-  # @example
-  #   Bioinfo.opt_network.timeout = 60 # 60 senconds
-  #   
-  NetworkOption = Struct.new(:timeout, :proxy) do
-    include Singleton
-  end
-
-  # Error class representing HTTP errors
-  class HTTPError < RuntimeError; end
-
   # Centralised request function for handling all of the HTTP requests.
   #
   # @param [String] url the url

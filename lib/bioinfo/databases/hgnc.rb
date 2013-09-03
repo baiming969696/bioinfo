@@ -6,8 +6,55 @@ require 'fileutils'
 # storing the convertion pairs, using Entrez ID as primatry key.
 #
 # == Example Usage
-# HGNC is usually used as a dictionary in scripts. There are three ways to 
-# interactive with HGNC, which may return different responses **(nil or "")**.
+#
+# === Instantiation
+# Create an HGNC using default downloaded HGNC data is the most common way.
+#   hgnc = Bioinfo::Databases::HGNC.new
+#
+# Or you want to create an instance with your own HGNC table.
+#   hgnc = Bioinfo::Databases::HGNC.new("path_to_your_table/hgnc_custom.txt")
+#
+# === Convert in hash way
+# Using HGNC object in hash way is the most effective way but without symbol 
+# rescue function.
+#   hgnc.entrez2symbol["100"] # => "ADA"
+#   some_function(hgnc.entrez2symbol["100"], other_params) unless hgnc.entrez2symbol["100"].nil?
+#
+# Note that nil (not "") will be returned by hash if failed to index.
+#   hgnc.symbol2entrez["NOT_SYMBOL"] # => nil
+#
+# And the hash does not rescue symbols if fail to index.
+#   hgnc.symbol2entrez["ada"] # => nil
+#
+# === Convert in method way
+# Using HGNC object to convert identifers in method way would rescue symbol 
+# while costs a little more.
+#   hgnc.entrez2symbol("100") # => "ADA"
+#   some_function(hgnc.entrez2symbol("100"), other_params) unless hgnc.entrez2symbol("100") == ""
+#
+# Note that empty String "" (not nil) will be returned if failed to convert.
+#   hgnc.symbol2entrez["NOT_SYMBOL"] # => ""
+#
+# Method will rescue symbols if fail to query.
+#   hgnc.symbol2entrez("ada") # => "100"
+#
+# === Convert String or Array
+# Using extended String or Array is a more Ruby way (as far as I think). Just 
+# to claim an HGNC object as the dictionary at first.
+#   BioDB::HGNC.new.as_dictionary
+#
+# Then miricles happen.
+#   "100".entrez2symbol # => "ADA"
+#   some_function("100".entrez2symbol, other_params) unless "100".entrez2symbol == ""
+#
+# Note that empty String "" (not nil) will be returned if fail to convert 
+#   "NOT_SYMBOL".symbol2entrez # => ""
+#   "NOT_SYMBOL".symbol2entrez.entrez2ensembl # => ""
+#
+# Have fun!
+#   "APC".symbol2entrez.entrez2ensembl # => "ENSG00000134982"
+#   ["APC", "IL1"].symbol2entrez # => ["324","3552"] 
+#   nil.entrez2ensembl # NoMethodError
 #
 # == About HGNC Database
 # The HUGO Gene Nomenclature Committee (HGNC) is the only worldwide authority 
@@ -107,7 +154,9 @@ class Bioinfo::Databases::HGNC
 
       @symbol2entrez[column[@col[:Approved_Symbol]]] = column[@col[:Entrez_Gene_ID]]
       @entrez2symbol[column[@col[:Entrez_Gene_ID]]] = column[@col[:Approved_Symbol]]
-      
+      column[@col[:Previous_Symbols]].split(", ").each { |symb| @symbol2entrez[symb] = column[@col[:Entrez_Gene_ID]] if @symbol2entrez[symb].nil? }
+      column[@col[:Synonyms]].split(", ").each { |symb| @symbol2entrez[symb] = column[@col[:Entrez_Gene_ID]] if @symbol2entrez[symb].nil? }
+
       unless @col[:UniProt_ID].nil? or column[@col[:UniProt_ID]] == "-" or column[@col[:UniProt_ID]].nil? or column[@col[:UniProt_ID]] == ""
         @uniprot2entrez[column[@col[:UniProt_ID]]] = column[@col[:Entrez_Gene_ID]]
         @entrez2uniprot[column[@col[:Entrez_Gene_ID]]] = column[@col[:UniProt_ID]]
@@ -116,16 +165,12 @@ class Bioinfo::Databases::HGNC
         @refseq2entrez[column[@col[:RefSeq]]] = column[@col[:Entrez_Gene_ID]]
         @entrez2refseq[column[@col[:Entrez_Gene_ID]]] = column[@col[:RefSeq]]
       end
+      unless @col[:RefSeq_IDs].nil? or column[@col[:RefSeq_IDs]].nil? or column[@col[:RefSeq_IDs]] == ""
+        column[@col[:RefSeq_IDs]].split(", ").each { |refseq| @refseq2entrez[refseq] = column[@col[:Entrez_Gene_ID]] if @refseq2entrez[refseq].nil? }
+      end
       unless @col[:Ensembl_ID].nil? or column[@col[:Ensembl_ID]].nil? or column[@col[:UniProt_ID]] == ""
         @ensembl2entrez[column[@col[:Ensembl_ID]]] = column[@col[:Entrez_Gene_ID]]
         @entrez2ensembl[column[@col[:Entrez_Gene_ID]]] = column[@col[:Ensembl_ID]]
-      end
-
-      column[@col[:Previous_Symbols]].split(", ").each { |symb| @symbol2entrez[symb] = column[@col[:Entrez_Gene_ID]] if @symbol2entrez[symb].nil? }
-      column[@col[:Synonyms]].split(", ").each { |symb| @symbol2entrez[symb] = column[@col[:Entrez_Gene_ID]] if @symbol2entrez[symb].nil? }
-
-      unless @col[:RefSeq_IDs].nil? or column[@col[:RefSeq_IDs]].nil? or column[@col[:RefSeq_IDs]] == ""
-        column[@col[:RefSeq_IDs]].split(", ").each { |refseq| @refseq2entrez[refseq] = column[@col[:Entrez_Gene_ID]] if @refseq2entrez[refseq].nil? }
       end
     end
     fin.close

@@ -30,10 +30,10 @@ end
 # clean
 desc "Clean the directory"
 task :clean => :clean_log do
-  [".yardoc", "doc", "log", "tmp", "*.gem"].each do |f|
+  [".yardoc", "doc", "log", "tmp"].each do |f|
     FileUtils.rm_r(f) rescue nil
   end
-  FileList["data/*"].exclude("data/samples").each do |d|
+  FileList["data/*", "*.gem"].exclude("data/samples").each do |d|
     FileUtils.rm_r(d)
   end
 end

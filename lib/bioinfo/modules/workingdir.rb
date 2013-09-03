@@ -10,7 +10,6 @@ module Bioinfo::Modules::WorkingDir
   def wd
     @wd or raise "The working directory of #{self} is undefined."
   end
-
   # Set current working directory
   #
   # If not exists, the method will try to mkdir one.
