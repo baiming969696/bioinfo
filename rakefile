@@ -21,11 +21,20 @@ task :issue do
   system ("rake test TEST=" + current_issue)
 end
 
+# clean_log
+desc "Clean logs"
+task :clean_log do
+  FileUtils.rm_r("log") rescue nil
+end
+
 # clean
 desc "Clean the directory"
-task :clean do
-  [".yardoc", "doc", "log", "tmp", "data", "*.gem"].each do |f|
+task :clean => :clean_log do
+  [".yardoc", "doc", "log", "tmp", "*.gem"].each do |f|
     FileUtils.rm_r(f) rescue nil
+  end
+  FileList["data/*"].exclude("data/samples").each do |d|
+    FileUtils.rm_r(d)
   end
 end
 

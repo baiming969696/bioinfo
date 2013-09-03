@@ -26,9 +26,14 @@ class Bioinfo::Logger
   include Singleton
   include Bioinfo::Modules::WorkingDir
 
+  # Get the logger linked to STDOUT
+  attr_reader :screen_logger
+  # Get the logger linked to log file
+  attr_reader :file_logger
+
   # @private
   def inspect
-    "<Bioinfo::Logger singleton>"
+    "#<Bioinfo::Logger.singleton>"
   end
 
   # @private

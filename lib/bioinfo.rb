@@ -25,7 +25,6 @@ module Bioinfo
   self.autoload(:Modules, "bioinfo/modules")
   self.autoload(:Databases, "bioinfo/databases")
   self.autoload(:Scripts, "bioinfo/scripts")
-
   # autoloaders - classes
   self.autoload(:Logger, "bioinfo/logger")
   self.autoload(:Script, "bioinfo/script")
@@ -33,8 +32,7 @@ module Bioinfo
   extend Modules::WorkingDir
 
 	# Current version of Bioinfo
-	VERSION = "0.0.1"
-
+	VERSION = "0.0.2"
   # Default working directory
   DEFAULT_WORKING_DIRECTORY = File.expand_path("../..",__FILE__)
 
@@ -45,21 +43,24 @@ module Bioinfo
   def log
     Logger.instance
   end
-
   # Get the instance of Bioinfo::Utility::NetworkOption
   # @return [Bioinfo::Utility::NetworkOption]
   def opt_network
     Utility::NetworkOption.instance
   end
-
   # Default initialization
   # @return [Bioinfo] the Bioinfo module itself
   def init 
     Bioinfo.wd = Bioinfo::DEFAULT_WORKING_DIRECTORY
-    Bioinfo.log.level = Logger::DEBUG
+    Bioinfo.log.level = Logger::INFO
     return self
   end
 end
+
+# Extention to Ruby's Core library
+class String; end
+# Extention to Ruby's Core library
+class Array; end
 
 # Necessary initialization
 Bioinfo.wd = Bioinfo::DEFAULT_WORKING_DIRECTORY

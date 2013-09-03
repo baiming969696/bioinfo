@@ -16,10 +16,9 @@ Gem::Specification.new do |s|
   s.email       = ["aidistan@live.cn"]
   s.homepage    = "http://aidistan.github.io/bioinfo/"
 
-  s.files         = FileList['lib/**/*', 'test/**/*', 
+  s.files         = FileList['lib/**/*', 'test/**/*', 'data/samples/*',
                              '.yardopts', 'rakefile', 
                              'LICENSE', '*.md', ].to_a
-                             # 'data/test_sets/*'
   s.require_paths = ["lib"]
   s.test_files    = FileList['test/**/*'].to_a
 
