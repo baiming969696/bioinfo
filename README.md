@@ -88,6 +88,9 @@ Following is the list of some __possible__ differences.
 
 		  def some_private_method
 		  end
+
+		  # special handling, such as overwriting
+		  # note to escape YARD documenting
 		end
 
 

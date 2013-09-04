@@ -1,14 +1,109 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
-require 'fileutils'
 
-# HGNC object loads in a table in HGNC-database format and builds hashes 
-# storing the convertion pairs, using Entrez ID as primatry key.
+class Bioinfo::Databases::HGNC
+  #
+  # Macro definitions
+  #
+  private
+
+  def self.create_converters(sym)
+    class_eval %{
+      def #{sym}
+        { direct:@@direct_converters, indirect:@@indirect_converters }
+      end
+    }
+    IDENTIFIERS.each_key do |src|
+      IDENTIFIERS.each_key do |dst|
+        next if src == dst
+        sym = (src.to_s + "2" + dst.to_s).to_sym
+        [src, dst].include?(:hgncid) ? create_direct_converter(sym) : create_indirect_converter(sym)
+      end
+    end
+    return nil
+  end
+
+  def self.create_direct_converter(*syms)
+    syms.each do |sym|
+      class_variable_defined?(:@@direct_converters) ? @@direct_converters<<sym : @@direct_converters=[sym]
+      class_eval %{
+        def #{sym}(obj = nil)
+          return @#{sym} unless obj
+          return @#{sym}[obj.to_s].to_s rescue raise ArgumentError, "The parameter \\"\#{obj}\\"(\#{obj.class}) can't be converted into String"
+        end
+      }
+      String.class_eval %{
+        def #{sym}
+          String.hgnc.#{sym}[self].to_s rescue raise "HGNC dictionary not given"
+        end
+        def #{sym}!
+          replace(String.hgnc.#{sym}[self].to_s) rescue raise "HGNC dictionary not given"
+        end
+      }
+      Array.class_eval %{
+        def #{sym}
+          self.collect do |item|
+            item.to_s rescue raise ArgumentError, "The element \\"\#{item}\\"(\#{item.class}) in the Array can't be converted into String"
+          end.collect { |item| item.#{sym} }
+        end
+        def #{sym}!
+          self.collect! do |item|
+            item.to_s rescue raise ArgumentError, "The element \\"\#{item}\\"(\#{item.class}) in the Array can't be converted into String"
+          end.collect! { |item| item.#{sym} }
+        end
+      }
+    end
+    return nil
+  end
+
+  def self.create_indirect_converter(*syms)
+    syms.each do |sym|
+      class_variable_defined?(:@@indirect_converters) ? @@indirect_converters<<sym : @@indirect_converters=[sym]
+      /^(?<src>[^2]+)2(?<dst>.+)$/ =~ sym.to_s
+      class_eval %{
+        def #{sym}(obj)
+          return hgncid2#{dst}(#{src}2hgncid(obj)) rescue raise ArgumentError, "The parameter \\"\#{obj}\\"(\#{obj.class}) can't be converted into String"
+        end
+      }
+      String.class_eval %{
+        def #{sym}
+          self.#{src}2hgncid.hgncid2#{dst}
+        end
+        def #{sym}!
+          replace(self.#{src}2hgncid.hgncid2#{dst})
+        end
+      }
+      Array.class_eval %{
+        def #{sym}
+          self.collect do |item|
+            item.to_s rescue raise ArgumentError, "The element \\"\#{item}\\"(\#{item.class}) in the Array can't be converted into String"
+          end.collect { |item| item.#{src}2hgncid.hgncid2#{dst} }
+        end
+        def #{sym}!
+          self.collect! do |item|
+            item.to_s rescue raise ArgumentError, "The element \\"\#{item}\\"(\#{item.class}) in the Array can't be converted into String"
+          end.collect! { |item| item.#{src}2hgncid.hgncid2#{dst} }
+        end
+      }
+    end
+    return nil
+  end
+end
+
+# HGNC object loads in any given table in HGNC format and builds hashes 
+# storing the convertion pairs, using HGNC ID as the primary key.
+#
+# == Mechanism
+# HGNC object stores several hashes to convert other identifiers from or into 
+# HGNC IDs, since HGNC ID served as the primary key. Any converter whose name 
+# includes "hgncid" is called a direct converter, otherwise a indirect 
+# converter.
 #
 # == Example Usage
 #
 # === Instantiation
-# Create an HGNC using default downloaded HGNC data is the most common way.
+# Create an HGNC using default downloaded table is the most common way. It 
+# may take minutes to download the table at the first time.
 #   hgnc = Bioinfo::Databases::HGNC.new
 #
 # Or you want to create an instance with your own HGNC table.
@@ -16,19 +111,19 @@ require 'fileutils'
 #
 # === Convert in hash way
 # Using HGNC object in hash way is the most effective way but without symbol 
-# rescue function.
-#   hgnc.entrez2symbol["100"] # => "ADA"
-#   some_function(hgnc.entrez2symbol["100"], other_params) unless hgnc.entrez2symbol["100"].nil?
+# rescue. (Direct converters only)
+#   hgnc.entrez2hgncid["ASIC1"] # => "HGNC:100"
+#   some_function(hgnc.entrez2hgncid["ASIC1"], other_params) unless hgnc.entrez2hgncid["ASIC1"].nil?
 #
 # Note that nil (not "") will be returned by hash if failed to index.
-#   hgnc.symbol2entrez["NOT_SYMBOL"] # => nil
+#   hgnc.symbol2hgncid["NOT_SYMBOL"] # => nil
 #
 # And the hash does not rescue symbols if fail to index.
-#   hgnc.symbol2entrez["ada"] # => nil
+#   hgnc.symbol2hgncid["ada"] # => nil
 #
 # === Convert in method way
 # Using HGNC object to convert identifers in method way would rescue symbol 
-# while costs a little more.
+# while costs a little more. 
 #   hgnc.entrez2symbol("100") # => "ADA"
 #   some_function(hgnc.entrez2symbol("100"), other_params) unless hgnc.entrez2symbol("100") == ""
 #
@@ -39,8 +134,8 @@ require 'fileutils'
 #   hgnc.symbol2entrez("ada") # => "100"
 #
 # === Convert String or Array
-# Using extended String or Array is a more Ruby way (as far as I think). Just 
-# to claim an HGNC object as the dictionary at first.
+# Using extended String or Array is a more "Ruby" way (as far as I think). 
+# Just claim an HGNC object as the dictionary at first.
 #   BioDB::HGNC.new.as_dictionary
 #
 # Then miricles happen.
@@ -69,9 +164,47 @@ class Bioinfo::Databases::HGNC
   extend Bioinfo::Modules::WorkingDir
 
   # Current version of HGNC
-  VERSION = "0.1.0"
-  # Download url of default hgnc table
+  VERSION = "0.2.0"
+  # Download url of default HGNC table
   DOWNLOAD_URL = "http://www.genenames.org/cgi-bin/hgnc_downloads?col=gd_hgnc_id&col=gd_app_sym&col=gd_app_name&col=gd_status&col=gd_prev_sym&col=gd_aliases&col=gd_pub_chrom_map&col=gd_pub_acc_ids&col=gd_pub_refseq_ids&col=md_eg_id&col=md_refseq_id&col=md_prot_id&col=md_ensembl_id&status=Approved&status=Entry+Withdrawn&status_opt=2&where=%28%28gd_pub_chrom_map+not+like+%27%25patch%25%27+and+gd_pub_chrom_map+not+like+%27%25ALT_REF%25%27%29+or+gd_pub_chrom_map+IS+NULL%29+and+gd_locus_group+%3D+%27protein-coding+gene%27&order_by=gd_hgnc_id&format=text&limit=&hgnc_dbtag=on&submit=submit"
+  # Identifers available in Bioinfo::Databases::HGNC by now mapped to headline in HGNC table
+  IDENTIFIERS = {
+    hgncid:"HGNC ID",
+    symbol:["Approved Symbol", "Previous Symbols", "Synonyms"],
+    entrez:"Entrez Gene ID(supplied by NCBI)",
+    refseq:["RefSeq(supplied by NCBI)", "RefSeq IDs"],
+    uniprot:"UniProt ID(supplied by UniProt)",
+    ensembl:"Ensembl ID(supplied by Ensembl)",
+  }
+
+  # Convertion method family
+  # @overload converter_list
+  #   List all HGNC convertion methods
+  #   @return [Hash]
+  #   @example
+  #     hgnc.converter_list
+  #     # => {:direct=>[:hgncid2symbol, ...], :indirect=>[:symbol2entrez, ...]}
+  # @overload direct_converter
+  #   Get the corresponding hash
+  #   @return [Hash]
+  #   @example
+  #     hgnc.symbol2hgncid          # => {...}
+  #     hgnc.symbol2hgncid["ASIC1"] # => "HGNC:100"
+  # @overload direct_converter(str)
+  #   Convert str
+  #   @param [String]
+  #   @return [String] "" for no result
+  #   @example
+  #     hgnc.symbol2hgncid("ASIC1") # => "HGNC:100"
+  #     hgnc.symbol2hgncid("") # => ""
+  # @overload indirect_converter(str)
+  #   Convert str
+  #   @param [String]
+  #   @return [String] "" for no result
+  #   @example
+  #     hgnc.symbol2entrez("ASIC1") # => "41"
+  #     hgnc.symbol2entrez["ASIC1"] # => ArgumentError
+  create_converters :converter_list
 
   # Returns true if rescue symbol
   # @return [Boolean]
@@ -85,7 +218,7 @@ class Bioinfo::Databases::HGNC
     @@rescue_symbol = (boolean ? true : false)
 
     # Load in rescue history if exists
-    if @@rescue_symbol && !self.class_variable_defined?(:@@rescue_history)
+    if @@rescue_symbol && !class_variable_defined?(:@@rescue_history)
       @@rescue_history = {}
       @@rescue_history_filename = File.expand_path("rescue_history.txt", self.wd)
       if FileTest.exists?(@@rescue_history_filename)
@@ -113,70 +246,51 @@ class Bioinfo::Databases::HGNC
   # Create a new HGNC object based on the given table or one downloaded from {DOWNLOAD_URL} if filepath is nil.
   # @param [String] filepath the path of your HGNC table files if default not used
   def initialize(filepath = nil)
-    filepath ||= File.expand_path("hgnc_downloads.txt", Bioinfo::Databases::HGNC.wd)    
-    @symbol2entrez  = {}
-    @entrez2symbol  = {}
-    @uniprot2entrez = {}
-    @entrez2uniprot = {}
-    @refseq2entrez  = {}
-    @entrez2refseq  = {}
-    @ensembl2entrez = {}
-    @entrez2ensembl = {}
+    # Instance variables
+    @@direct_converters.each { |sym| instance_variable_set("@" + sym.to_s, {}) }
 
-    # Download hgnc data table if in need
-    unless File.exists?(filepath)
-      Bioinfo.log.warn("HGNC") { "Databse file not exist in the given path: \"#{File.dirname(filepath)}\". Trying to download one instead." }
-      FileUtils.mkdir_p(File.dirname(filepath)) unless Dir.exists?(File.dirname(filepath))
-      File.open(filepath, 'w').puts Bioinfo::Utility.request(DOWNLOAD_URL)
-    end
-    fin = File.new(filepath)
-
-    # Titleline
-    @col = {}
-    fin.gets.chomp.split("\t").each_with_index do |column, index|
-      case column
-      when /HGNC ID/             then @col[:HGNC_ID] = index
-      when /Approved Symbol/     then @col[:Approved_Symbol] = index
-      when /Previous Symbols/    then @col[:Previous_Symbols] = index
-      when /Synonyms/            then @col[:Synonyms] = index
-      when /Entrez Gene ID/      then @col[:Entrez_Gene_ID] = index
-      when /RefSeq IDs/          then @col[:RefSeq_IDs] = index
-      when /RefSeq/              then @col[:RefSeq] = index
-      when /UniProt ID/          then @col[:UniProt_ID] = index
-      when /Ensembl ID/          then @col[:Ensembl_ID] = index
+    if filepath
+      raise ArgumentError, "#{filepath} not exists" unless File.exists?(filepath)
+    else
+      # Load the default HGNC table (may download if in need)
+      filepath = File.expand_path("hgnc_downloads.txt", Bioinfo::Databases::HGNC.wd)
+      unless File.exists?(filepath)
+        Bioinfo.log.info("HGNC") { "Since default HGNC table not exists, trying to download one." }
+        File.open(filepath, 'w').puts Bioinfo::Utility.request(DOWNLOAD_URL)
       end
-    end
-
-    # Content
-    fin.each do |line|
-      column = line.chomp.split("\t")
-      next if column[@col[:Entrez_Gene_ID]] == "" # Next line if no existing primary key
-
-      @symbol2entrez[column[@col[:Approved_Symbol]]] = column[@col[:Entrez_Gene_ID]]
-      @entrez2symbol[column[@col[:Entrez_Gene_ID]]] = column[@col[:Approved_Symbol]]
-      column[@col[:Previous_Symbols]].split(", ").each { |symb| @symbol2entrez[symb] = column[@col[:Entrez_Gene_ID]] if @symbol2entrez[symb].nil? }
-      column[@col[:Synonyms]].split(", ").each { |symb| @symbol2entrez[symb] = column[@col[:Entrez_Gene_ID]] if @symbol2entrez[symb].nil? }
-
-      unless @col[:UniProt_ID].nil? or column[@col[:UniProt_ID]] == "-" or column[@col[:UniProt_ID]].nil? or column[@col[:UniProt_ID]] == ""
-        @uniprot2entrez[column[@col[:UniProt_ID]]] = column[@col[:Entrez_Gene_ID]]
-        @entrez2uniprot[column[@col[:Entrez_Gene_ID]]] = column[@col[:UniProt_ID]]
-      end
-      unless @col[:RefSeq].nil? or column[@col[:RefSeq]].nil? or column[@col[:UniProt_ID]] == ""
-        @refseq2entrez[column[@col[:RefSeq]]] = column[@col[:Entrez_Gene_ID]]
-        @entrez2refseq[column[@col[:Entrez_Gene_ID]]] = column[@col[:RefSeq]]
-      end
-      unless @col[:RefSeq_IDs].nil? or column[@col[:RefSeq_IDs]].nil? or column[@col[:RefSeq_IDs]] == ""
-        column[@col[:RefSeq_IDs]].split(", ").each { |refseq| @refseq2entrez[refseq] = column[@col[:Entrez_Gene_ID]] if @refseq2entrez[refseq].nil? }
-      end
-      unless @col[:Ensembl_ID].nil? or column[@col[:Ensembl_ID]].nil? or column[@col[:UniProt_ID]] == ""
-        @ensembl2entrez[column[@col[:Ensembl_ID]]] = column[@col[:Entrez_Gene_ID]]
-        @entrez2ensembl[column[@col[:Entrez_Gene_ID]]] = column[@col[:Ensembl_ID]]
-      end
-    end
-    fin.close
-
+    end    
+    load_hgnc_table(File.open(filepath))
+  
     Bioinfo.log.debug("HGNC") { "New object " + self.inspect }
   end
+  # Use self as the dictionary for String & Array extention
+  # @return [self]
+  def as_dictionary
+    String.hgnc = self
+  end
+  # Return the statistics hash
+  # @return [Hash]
+  # @example
+  #   Bioinfo::Databases::HGNC.new("test_hgnc_dataset.txt").stat
+  #   # => {"Gene Symbol"=>24, "Entrez ID"=>9, "Refseq ID"=>13, "Uniprot ID"=>9, "Ensembl ID"=>9}
+  def stat
+    @stat = {}
+    IDENTIFIERS.each_key do |id|
+      id == :hgncid ? @stat[id] = @hgncid2symbol.size : @stat[id] = instance_variable_get("@" + id.to_s + "2hgncid").size
+    end
+    return @stat
+  end
+  # @private
+  def inspect
+    "#<Bioinfo::Databases::HGNC @stat=#{stat.inspect}>"
+  end
+  # @private
+  def to_s
+    inspect
+  end
+
+  private
+  
   # Try to rescue a gene symbol
   # @param [String] symbol Gene symbol
   # @param [Symbol] method :auto or :manual
@@ -186,11 +300,11 @@ class Bioinfo::Databases::HGNC
     case method
     when :auto
       auto_rescue = ""
-      if @symbol2entrez[symbol.upcase]
+      if @symbol2hgncid[symbol.upcase]
         auto_rescue = symbol.upcase
-      elsif @symbol2entrez[symbol.gsub('-','')]
+      elsif @symbol2hgncid[symbol.gsub('-','')]
         auto_rescue = symbol.gsub('-','')
-      elsif @symbol2entrez[symbol.upcase.gsub('-','')]
+      elsif @symbol2hgncid[symbol.upcase.gsub('-','')]
         auto_rescue = symbol.upcase.gsub('-','')
       # Add more rules here
       end
@@ -212,7 +326,7 @@ class Bioinfo::Databases::HGNC
       # Manually rescue
       loop do
         print "Please correct \"#{symbol}\" or press enter directly to return empty String instead:\n"
-        unless (manual_rescue = gets.chomp) == "" || @symbol2entrez[manual_rescue]
+        unless (manual_rescue = gets.chomp) == "" || @symbol2hgncid[manual_rescue]
           puts "Failed to recognize \"#{manual_rescue}\""
           next
         end
@@ -222,137 +336,93 @@ class Bioinfo::Databases::HGNC
       end
     end
   end
-  # Return the statistics hash
-  # @return [Hash]
-  # @example
-  #   Bioinfo::Databases::HGNC.new("test_hgnc_dataset.txt").stat
-  #   # => {"Gene Symbol"=>24, "Entrez ID"=>9, "Refseq ID"=>13, "Uniprot ID"=>9, "Ensembl ID"=>9}
-  def stat
-    @stat = {
-      "Gene Symbol" => @symbol2entrez.size,
-      "Entrez ID"   => @entrez2symbol.size,
-      "Refseq ID"   => @refseq2entrez.size
-    }
-    @stat["Uniprot ID"] = @uniprot2entrez.size unless @col[:UniProt_ID].nil?
-    @stat["Ensembl ID"] = @ensembl2entrez.size unless @col[:Ensembl_ID].nil?
-    return @stat
-  end
-  # @private
-  def inspect
-    "#<Bioinfo::Databases::HGNC @stat=#{stat.inspect}>"
-  end
-  # @private
-  def to_s
-    inspect
-  end
-
-  #
-  # @!group Convertion Methods
-  #
-
-  # @overload symbol2entrez
-  #   Get symbol2entrez hash
-  #   @return [Hash]
-  # @overload symbol2entrez(symbol)
-  #   Convert symbol into entrez
-  #   @param [String] symbol
-  #   @return [String] "" for no result
-  def symbol2entrez(symbol = nil)
-    return @symbol2entrez unless symbol
-    begin
-      (symbol == "") ? "" : @symbol2entrez.fetch(symbol)
-    rescue
-      if @@rescue_symbol
-        @@rescue_history[symbol] ? @symbol2entrez[@@rescue_history[symbol]].to_s : @symbol2entrez[rescue_symbol(symbol)].to_s
+  # Load in the hgnc table from IO
+  # @param [#gets, #each] fin Typically a File or IO
+  def load_hgnc_table(fin)
+    # Headline
+    names = fin.gets.chomp.split("\t")
+    index2identifier = {}
+    index_hgncid = nil
+    IDENTIFIERS.each_pair do |identifer, name|
+      if identifer == :hgncid
+        index_hgncid = names.index(name)
+      elsif name.is_a?(String)
+        index2identifier[names.index(name)] = identifer if names.index(name)
       else
-        ""
+        name.each_with_index { |n, i| index2identifier[names.index(n)] =  (i == 0 ? identifer : identifer.to_s) if names.index(n) }
+      end
+    end
+    
+    # Dynamically bulid a line processor
+    process_one_line = index2identifier.collect { |index, identifer|
+      if identifer.is_a?(Symbol) # Single
+      %{
+        unless column[#{index}] == "" || column[#{index}] == "-"
+          @#{identifer}2hgncid[column[#{index}]] = column[#{index_hgncid}]
+          @hgncid2#{identifer}[column[#{index_hgncid}]] = column[#{index}]
+        end }
+      else # Array
+      %{ 
+        column[#{index}].split(", ").each { |id| @#{identifer}2hgncid[id] = column[#{index_hgncid}] if @#{identifer}2hgncid[id].nil? } }
+      end
+    }.join
+
+    # Content
+    eval %{fin.each do |line|\n column = line.chomp.split("\\t")} + process_one_line + "end"
+    return nil
+  end
+
+  #
+  # Overwrite some methods to provide symbol rescue funtion
+  # Use class_eval to ensure not documented by YARD
+  #
+  class_eval do
+    def symbol2hgncid(symbol = nil)
+      return @symbol2hgncid unless symbol
+      begin
+        @symbol2hgncid.fetch(symbol)
+      rescue KeyError
+        return "" if symbol == "" || !@@rescue_symbol
+        @@rescue_history[symbol] ? @symbol2hgncid[@@rescue_history[symbol]].to_s : @symbol2hgncid[rescue_symbol(symbol)].to_s
       end
     end
   end
-  # @overload uniprot2entrez
-  #   Get the uniprot2entrez hash
-  #   @return [Hash]
-  # @overload uniprot2entrez(uniprot)
-  #   Convert uniprot into entrez
-  #   @param [String] uniprot
-  #   @return [String] "" for no result
-  def uniprot2entrez(uniprot = nil)
-    return @uniprot2entrez unless uniprot
-    return @uniprot2entrez[uniprot].to_s
+  String.class_eval do
+    def symbol2hgncid
+      String.hgnc.symbol2hgncid(self) rescue raise "HGNC dictionary not given"
+    end
+    def symbol2hgncid!
+      replace(String.hgnc.symbol2hgncid(self)) rescue raise "HGNC dictionary not given"
+    end
   end
-  # @overload refseq2entrez
-  #   Get the refseq2entrez hash
-  #   @return [Hash]
-  # @overload refseq2entrez(refseq)
-  #   Convert refseq into entrez
-  #   @param [String] refseq
-  #   @return [String] "" for no result
-  def refseq2entrez(refseq = nil)
-    return @refseq2entrez unless refseq
-    return @refseq2entrez[refseq].to_s
-  end
-  # @overload ensembl2entrez
-  #   Get the ensembl2entrez hash
-  #   @return [Hash]
-  # @overload ensembl2entrez(ensembl)
-  #   Convert ensembl into entrez
-  #   @param [String] ensembl
-  #   @return [String] "" for no result
-  def ensembl2entrez(ensembl = nil)
-    return @ensembl2entrez unless ensembl
-    return @ensembl2entrez[ensembl].to_s
-  end
-  # @overload entrez2symbol
-  #   Get the entrez2symbol hash
-  #   @return [Hash]
-  # @overload entrez2symbol(entrez)
-  #   Convert entrez into symbol
-  #   @param [String] entrez
-  #   @return [String] "" for no result
-  def entrez2symbol(entrez = nil)
-    return @entrez2symbol unless entrez
-    return @entrez2symbol[entrez].to_s
-  end
-  # @overload entrez2uniprot
-  #   Get the entrez2uniprot hash
-  #   @return [Hash]
-  # @overload entrez2uniprot(entrez)
-  #   Convert entrez into uniprot
-  #   @param [String] entrez
-  #   @return [String] "" for no result
-  def entrez2uniprot(entrez = nil)
-    return @entrez2uniprot unless entrez
-    return @entrez2uniprot[entrez].to_s
-  end
-  # @overload entrez2refseq
-  #   Get the entrez2refseq hash
-  #   @return [Hash]
-  # @overload entrez2refseq(entrez)
-  #   Convert entrez into refseq
-  #   @param [String] entrez
-  #   @return [String] "" for no result
-  def entrez2refseq(entrez = nil)
-    return @entrez2refseq unless entrez
-    return @entrez2refseq[entrez].to_s
-  end
-  # @overload entrez2ensembl
-  #   Get the entrez2ensembl hash
-  #   @return [Hash]
-  # @overload entrez2ensembl(entrez)
-  #   Convert entrez into ensembl
-  #   @param [String] entrez
-  #   @return [String] "" for no result
-  def entrez2ensembl(entrez = nil)
-    return @entrez2ensembl unless entrez
-    return @entrez2ensembl[entrez].to_s
-  end
-
-  #
-  # @!endgroup
-  #
 end
 
-require 'bioinfo/databases/hgnc/extend_core'
+class String
+  # Get the HGNC dictionary for convertion
+  # @return [Bioinfo::Databases::HGNC]
+  def self.hgnc
+    @hgnc
+  end
+  # @overload hgnc=(obj)
+  #   Set the HGNC dictionary for convertion
+  #   @param [Bioinfo::Databases::HGNC] obj
+  #   @return [Bioinfo::Databases::HGNC]
+  # @overload hgnc=(nil)
+  #   Deregister the HGNC dictionary
+  #   @param [nil]
+  #   @return [Bioinfo::Databases::HGNC] the previous value
+  #
+  # @raise ArgumentError Raised if neither HGNC object nor nil given
+  def self.hgnc=(obj)
+    if obj == nil
+      @hgnc, obj = obj, @hgnc
+      return obj
+    else
+      raise ArgumentError, "Not a HGNC object" unless obj.is_a?(Bioinfo::Databases::HGNC)
+      @hgnc = obj
+    end
+  end
+end
 
 Bioinfo::Databases::HGNC.wd = File.expand_path("data/hgnc", Bioinfo.wd)
 Bioinfo::Databases::HGNC.rescue_symbol = true

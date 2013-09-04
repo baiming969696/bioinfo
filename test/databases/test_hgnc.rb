@@ -14,23 +14,33 @@ class Bioinfo_Databases_HGNC_Test < Test::Unit::TestCase
 
   context "HGNC object" do
     should "convert identifiers in Hash way" do
-      assert_equal("41", @hgnc.symbol2entrez["ASIC1"])
-      assert_equal("RGS5", @hgnc.entrez2symbol["8490"])
-      assert_equal("9028", @hgnc.refseq2entrez["NM_003961"])
-      assert_equal("8787", @hgnc.uniprot2entrez["O75916"])
-      assert_equal("6006", @hgnc.ensembl2entrez["ENSG00000188672"])
+      assert_equal("HGNC:100", @hgnc.symbol2hgncid["ASIC1"])
+      assert_equal("HGNC:10001", @hgnc.entrez2hgncid["8490"])
+      assert_equal("HGNC:10007", @hgnc.refseq2hgncid["NM_003961"])
+      assert_equal("HGNC:10004", @hgnc.uniprot2hgncid["O75916"])
+      assert_equal("HGNC:10008", @hgnc.ensembl2hgncid["ENSG00000188672"])
+      assert_equal("ASIC1", @hgnc.hgncid2symbol["HGNC:100"])
+      assert_equal("8490", @hgnc.hgncid2entrez["HGNC:10001"])
+      assert_equal("NM_003961", @hgnc.hgncid2refseq["HGNC:10007"])
+      assert_equal("O75916", @hgnc.hgncid2uniprot["HGNC:10004"])
+      assert_equal("ENSG00000188672", @hgnc.hgncid2ensembl["HGNC:10008"])
     end
     should "convert identifiers in method way" do
-      assert_equal("41", @hgnc.symbol2entrez("ASIC1"))
-      assert_equal("RGS5", @hgnc.entrez2symbol("8490"))
-      assert_equal("9028", @hgnc.refseq2entrez("NM_003961"))
-      assert_equal("8787", @hgnc.uniprot2entrez("O75916"))
-      assert_equal("6006", @hgnc.ensembl2entrez("ENSG00000188672"))
+      assert_equal("HGNC:100", @hgnc.symbol2hgncid("ASIC1"))
+      assert_equal("HGNC:10001", @hgnc.entrez2hgncid("8490"))
+      assert_equal("HGNC:10007", @hgnc.refseq2hgncid("NM_003961"))
+      assert_equal("HGNC:10004", @hgnc.uniprot2hgncid("O75916"))
+      assert_equal("HGNC:10008", @hgnc.ensembl2hgncid("ENSG00000188672"))
+      assert_equal("ASIC1", @hgnc.hgncid2symbol("HGNC:100"))
+      assert_equal("8490", @hgnc.hgncid2entrez("HGNC:10001"))
+      assert_equal("NM_003961", @hgnc.hgncid2refseq("HGNC:10007"))
+      assert_equal("O75916", @hgnc.hgncid2uniprot("HGNC:10004"))
+      assert_equal("ENSG00000188672", @hgnc.hgncid2ensembl("HGNC:10008"))
     end
     should "try to resuce unrecognized symbols" do
-      assert_equal("41", @hgnc.symbol2entrez("ASIC-1"))
-      assert_equal("41", @hgnc.symbol2entrez("Asic1"))
-      assert_equal("41", @hgnc.symbol2entrez("Asic-1"))
+      assert_equal("HGNC:100", @hgnc.symbol2hgncid("ASIC-1"))
+      assert_equal("HGNC:100", @hgnc.symbol2hgncid("Asic1"))
+      assert_equal("HGNC:100", @hgnc.symbol2hgncid("Asic-1"))
     end
   end
 
@@ -54,13 +64,19 @@ class Bioinfo_Databases_HGNC_Test < Test::Unit::TestCase
         assert_equal("6006", "ENSG00000188672".ensembl2entrez)
         assert_equal("", "".symbol2entrez)
       end
+      should "try to resuce unrecognized symbols too" do
+        @hgnc.as_dictionary
+        assert_equal("41", "ASIC-1".symbol2entrez)
+        assert_equal("41", "Asic1".symbol2entrez)
+        assert_equal("41", "Asic-1".symbol2entrez)
+      end
     end
 
     context "Array object" do
       should "convert identifiers" do
         @hgnc.as_dictionary
-        assert_raise(ArgumentError) { ["",1].symbol2entrez }
         assert_equal(["ASIC1", "RGS4"], ["41", "5999"].entrez2symbol)
+        assert_equal(["ASIC1", "RGS4"], [41, 5999].entrez2symbol)
       end
     end
   end

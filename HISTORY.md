@@ -1,6 +1,12 @@
 History
 ===============
 
+### 0.0.3 2013-09-
+* 1 major enhacement
+	*	Bumped Bioinfo::Database::HGNC version to 0.2.0
+  	* Used metaprogramming in Bioinfo::Database::HGNC
+  	* Removd bioinfo/databases/hgnc/*
+
 ### 0.0.2 2013-09-03
 * 2 major enhancement
   * Added Bioinfo::Utility.request for http requests

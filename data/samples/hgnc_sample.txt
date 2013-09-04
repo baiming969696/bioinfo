@@ -1,4 +1,4 @@
-HGNC ID	Approved Symbol	Approved Name	Status	Previous Symbols	Synonyms	Chromosome	Accession Numbers	RefSeq IDs	Entrez Gene ID	RefSeq	UniProt ID	Ensembl ID
+HGNC ID	Approved Symbol	Approved Name	Status	Previous Symbols	Synonyms	Chromosome	Accession Numbers	RefSeq IDs	Entrez Gene ID(supplied by NCBI)	RefSeq(supplied by NCBI)	UniProt ID(supplied by UniProt)	Ensembl ID(supplied by Ensembl)
 HGNC:100	ASIC1	acid-sensing (proton-gated) ion channel 1	Approved	ACCN2	BNaC2, hBNaC2	12q12	U78181	NM_020039	41	NR_046389	P78348	ENSG00000110881
 HGNC:10000	RGS4	regulator of G-protein signaling 4	Approved	SCZD9		1q23.3	BC051869	NM_005613	5999	NM_001102445	P49798	ENSG00000117152
 HGNC:10001	RGS5	regulator of G-protein signaling 5	Approved			1q23.1	AF030108	NM_003617	8490	NR_045630	O15539	ENSG00000143248
