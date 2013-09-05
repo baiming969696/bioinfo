@@ -220,7 +220,7 @@ class Bioinfo::Databases::HGNC
     # Load in rescue history if exists
     if @@rescue_symbol && !class_variable_defined?(:@@rescue_history)
       @@rescue_history = {}
-      @@rescue_history_filename = File.expand_path("rescue_history.txt", self.wd)
+      @@rescue_history_filename = self.path_to("rescue_history.txt")
       if FileTest.exists?(@@rescue_history_filename)
         File.open(@@rescue_history_filename).each do |line|
           column = line.chomp.split("\t")
@@ -253,7 +253,7 @@ class Bioinfo::Databases::HGNC
       raise ArgumentError, "#{filepath} not exists" unless File.exists?(filepath)
     else
       # Load the default HGNC table (may download if in need)
-      filepath = File.expand_path("hgnc_downloads.txt", Bioinfo::Databases::HGNC.wd)
+      filepath = self.class.path_to("hgnc_downloads.txt")
       unless File.exists?(filepath)
         Bioinfo.log.info("HGNC") { "Since default HGNC table not exists, trying to download one." }
         File.open(filepath, 'w').puts Bioinfo::Utility.request(DOWNLOAD_URL)
@@ -424,6 +424,6 @@ class String
   end
 end
 
-Bioinfo::Databases::HGNC.wd = File.expand_path("data/hgnc", Bioinfo.wd)
+Bioinfo::Databases::HGNC.wd = Bioinfo.path_to("data/hgnc")
 Bioinfo::Databases::HGNC.rescue_symbol = true
 Bioinfo::Databases::HGNC.rescue_method = :auto

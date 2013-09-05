@@ -13,10 +13,15 @@ module Bioinfo::Modules::WorkingDir
   # Set current working directory
   #
   # If not exists, the method will try to mkdir one.
-  #
   # @param [String] val target working directory
   def wd=(val)
     FileUtils.mkdir_p(val)
     @wd = val
+  end
+  # Expand a relative path to absolute one based on wd
+  # @param [String] relative_path relative path
+  # @return [String] absolute path
+  def path_to(relative_path)
+    File.expand_path(relative_path, @wd)
   end
 end

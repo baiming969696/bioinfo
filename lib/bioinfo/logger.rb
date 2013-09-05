@@ -49,7 +49,7 @@ class Bioinfo::Logger
   private
 
   def initialize
-    self.wd = File.expand_path("log", Bioinfo.wd)
+    self.wd = Bioinfo.path_to("log")
     
     # STDOUT
     @screen_logger = Logger.new(STDOUT)
@@ -59,7 +59,7 @@ class Bioinfo::Logger
     }
 
     # Log file
-    @file_logger = Logger.new(File.expand_path(Bioinfo::Utility.get_timestamp + ".log", self.wd))
+    @file_logger = Logger.new(path_to(Bioinfo::Utility.get_timestamp + ".log"))
     @file_logger.level = Logger::DEBUG
   end
   # Transmit method call if std-lib Logger can respond to it
