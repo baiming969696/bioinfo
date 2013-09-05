@@ -6,31 +6,31 @@ require 'bioinfo'
 
 class Bioinfo_Databases_HGNC_Test < Test::Unit::TestCase
   setup do
-    @hgnc  = Bioinfo::Databases::HGNC.new(File.expand_path("data/samples/hgnc_sample.txt", Bioinfo.wd))
+    @hgnc  = String.hgnc
   end
 
   context "HGNC object" do
     should "convert identifiers in Hash way" do
       assert_equal("HGNC:100", @hgnc.symbol2hgncid["ASIC1"])
       assert_equal("HGNC:10001", @hgnc.entrez2hgncid["8490"])
-      assert_equal("HGNC:10007", @hgnc.refseq2hgncid["NM_003961"])
+      assert_equal("HGNC:10007", @hgnc.refseq2hgncid["XM_005255665"])
       assert_equal("HGNC:10004", @hgnc.uniprot2hgncid["O75916"])
       assert_equal("HGNC:10008", @hgnc.ensembl2hgncid["ENSG00000188672"])
       assert_equal("ASIC1", @hgnc.hgncid2symbol["HGNC:100"])
       assert_equal("8490", @hgnc.hgncid2entrez["HGNC:10001"])
-      assert_equal("NM_003961", @hgnc.hgncid2refseq["HGNC:10007"])
+      assert_equal("XM_005255665", @hgnc.hgncid2refseq["HGNC:10007"])
       assert_equal("O75916", @hgnc.hgncid2uniprot["HGNC:10004"])
       assert_equal("ENSG00000188672", @hgnc.hgncid2ensembl["HGNC:10008"])
     end
     should "convert identifiers in method way" do
       assert_equal("HGNC:100", @hgnc.symbol2hgncid("ASIC1"))
       assert_equal("HGNC:10001", @hgnc.entrez2hgncid("8490"))
-      assert_equal("HGNC:10007", @hgnc.refseq2hgncid("NM_003961"))
+      assert_equal("HGNC:10007", @hgnc.refseq2hgncid("XM_005255665"))
       assert_equal("HGNC:10004", @hgnc.uniprot2hgncid("O75916"))
       assert_equal("HGNC:10008", @hgnc.ensembl2hgncid("ENSG00000188672"))
       assert_equal("ASIC1", @hgnc.hgncid2symbol("HGNC:100"))
       assert_equal("8490", @hgnc.hgncid2entrez("HGNC:10001"))
-      assert_equal("NM_003961", @hgnc.hgncid2refseq("HGNC:10007"))
+      assert_equal("XM_005255665", @hgnc.hgncid2refseq("HGNC:10007"))
       assert_equal("O75916", @hgnc.hgncid2uniprot("HGNC:10004"))
       assert_equal("ENSG00000188672", @hgnc.hgncid2ensembl("HGNC:10008"))
     end
@@ -42,8 +42,12 @@ class Bioinfo_Databases_HGNC_Test < Test::Unit::TestCase
   end
 
   context "With HGNC module," do
-    teardown do
+    setup do
       String.hgnc = nil
+    end
+
+    teardown do
+      String.hgnc = @hgnc
     end
     
     context "String object" do

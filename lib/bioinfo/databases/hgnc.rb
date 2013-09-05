@@ -213,7 +213,6 @@ class Bioinfo::Databases::HGNC
   end
   # When set to true, try to rescue unrecognized symbol
   # @param [Boolean] boolean
-  # @return [Boolean]
   def self.rescue_symbol= (boolean)
     @@rescue_symbol = (boolean ? true : false)
 
@@ -238,7 +237,6 @@ class Bioinfo::Databases::HGNC
   # When set to :manual, user has to explain every new unrecognized symbol; 
   # otherwise, HGNC will try to do this by itself.
   # @param [Symbol] symbol :manual or :auto
-  # @return [Symbol]
   def self.rescue_method= (symbol)
     @@rescue_method = (symbol == :manual ? :manual : :auto)
   end
@@ -256,7 +254,7 @@ class Bioinfo::Databases::HGNC
       filepath = self.class.path_to("hgnc_downloads.txt")
       unless File.exists?(filepath)
         Bioinfo.log.info("HGNC") { "Since default HGNC table not exists, trying to download one." }
-        File.open(filepath, 'w').puts Bioinfo::Utility.request(DOWNLOAD_URL)
+        File.open(filepath, 'w:UTF-8').puts Bioinfo::Utility.request(DOWNLOAD_URL)
       end
     end    
     load_hgnc_table(File.open(filepath))
@@ -406,17 +404,13 @@ class String
   # @overload hgnc=(obj)
   #   Set the HGNC dictionary for convertion
   #   @param [Bioinfo::Databases::HGNC] obj
-  #   @return [Bioinfo::Databases::HGNC]
   # @overload hgnc=(nil)
   #   Deregister the HGNC dictionary
   #   @param [nil]
-  #   @return [Bioinfo::Databases::HGNC] the previous value
-  #
   # @raise ArgumentError Raised if neither HGNC object nor nil given
   def self.hgnc=(obj)
     if obj == nil
-      @hgnc, obj = obj, @hgnc
-      return obj
+      @hgnc = nil
     else
       raise ArgumentError, "Not a HGNC object" unless obj.is_a?(Bioinfo::Databases::HGNC)
       @hgnc = obj

@@ -7,6 +7,9 @@ require 'bioinfo'
 # Keep screen clear
 Bioinfo.log.screen_logger.level = Logger::UNKNOWN
 
+# Save time & memory
+Bioinfo::Databases::HGNC.new.as_dictionary
+
 class Bioinfo_Test < Test::Unit::TestCase
   context "Bioinfo module" do
     should "have such hierarchy" do

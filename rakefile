@@ -21,21 +21,24 @@ Rake::TestTask.new(:issue) do |t|
   t.test_files = FileList["test/test_bioinfo.rb", current_issue]
 end
 
-# clean_log
-desc "Clean logs"
-task :clean_log do
+# clear
+desc "Clean the log"
+task :clear do
   FileUtils.rm_r("log") rescue nil
 end
 
 # clean
 desc "Clean the directory"
-task :clean => :clean_log do
-  [".yardoc", "doc", "log", "tmp"].each do |f|
-    FileUtils.rm_r(f) rescue nil
+task :clean => :clear do
+  FileList[".yardoc", "doc", "tmp", "*.gem"].each do |d|
+    FileUtils.rm_r(d) rescue nil
   end
-  FileList["data/*", "*.gem"].exclude("data/samples").each do |d|
-    FileUtils.rm_r(d)
-  end
+end
+
+# clobber
+desc "Clean the directory and discard downloaded data"
+task :clobber => :clean do
+  FileUtils.rm_r("data") rescue nil
 end
 
 # gem

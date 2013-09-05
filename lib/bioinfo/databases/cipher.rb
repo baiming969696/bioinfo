@@ -6,10 +6,16 @@ require 'fileutils'
 # OMIM ID), which are sorted based on global network inference.
 #
 # == Mechanism
-# Fetch disease list from {CIPHER_WEBSITE}, search the inner index of each 
-# OMIM ID and download Cipher gene tables through http. Although Cipher itself 
-# is a computational framework, the process within Cipher class is absolutely 
-# a database searching, which makes me decide to put it under {Bioinfo::Databases Bioinfo::Databases}.
+# The process of Cipher is simple and can be described by following steps:
+# * fetch the disease list and the gene list from {CIPHER_WEBSITE}
+# * search and download the corresponding Cipher gene table of each OMIM ID
+# * normalize gene identifiers to Approved Symbol and make them unique
+#   * delete ones without approved symbols
+#   * delete redundant symbols who rank lower
+#
+# Although Cipher itself is a computational framework, this process within 
+# Cipher class is absolutely a database searching, which makes me decide to 
+# put it under {Bioinfo::Databases Bioinfo::Databases}.
 #
 # == About Cipher
 # Correlating protein Interaction network and PHEnotype network to pRedict 
@@ -31,11 +37,19 @@ class Bioinfo::Databases::Cipher
 
   # Get the table of cipher genes
   # @return [Hash] OMIM IDs as keys
+  # @example
+  #   Bioinfo::Databases::Cipher.new("137280").genes
+  #   # => genes = {
+  #   #   "137280" => [
+  #   #     ["GSS", 1, "0.152752"], # [String, Fixnum, String]
+  #   #     ...
+  #   #   ]
+  #   # }
   attr_reader :genes
 
   # Initialize the Cipher object
   # @example
-  #   Bioinfo::Databases::Cipher.new(137280)
+  #   Bioinfo::Databases::Cipher.new("137280")
   #   # => #<Bioinfo::Databases::Cipher @genes.keys=["137280"]>
   # @overload initialize(omim_ids)
   #   @param [Array] omim_ids
@@ -48,7 +62,7 @@ class Bioinfo::Databases::Cipher
     unless self.class.class_variable_defined?(:@@disease_list)
       @@disease_list = {}
       filename = self.class.path_to("landscape_phenotype.txt")
-      File.open(filename, 'w').puts Bioinfo::Utility.request(CIPHER_WEBSITE + "landscape_phenotype.txt").gsub("\r","") unless File.exist?(filename)
+      File.open(filename, 'w:UTF-8').puts Bioinfo::Utility.request(CIPHER_WEBSITE + "landscape_phenotype.txt").gsub("\r","") unless File.exist?(filename)
       File.open(filename).each do |line|
         column = line.chomp.split("\t")
         column[2].gsub!('"', '')
@@ -59,7 +73,7 @@ class Bioinfo::Databases::Cipher
     unless self.class.class_variable_defined?(:@@gene_list)
       @@gene_list = [nil]
       filename = self.class.path_to("landscape_extended_id.txt")
-      File.open(filename, 'w').puts Bioinfo::Utility.request(CIPHER_WEBSITE + "landscape_extended_id.txt").gsub("\r","") unless File.exist?(filename)
+      File.open(filename, 'w:UTF-8').puts Bioinfo::Utility.request(CIPHER_WEBSITE + "landscape_extended_id.txt").gsub("\r","") unless File.exist?(filename)
       File.open(filename).each do |line|
         column = line.chomp.split("\t")
         gene   = String.hgnc.symbol2hgncid[column[4]]
@@ -74,7 +88,7 @@ class Bioinfo::Databases::Cipher
       next unless /(?<omim_id>\d+)/ =~ omim_id.to_s
       next unless @@disease_list[omim_id]
       filename = self.class.path_to(@@disease_list[omim_id][0] + ".txt")
-      File.open(filename, 'w').puts Bioinfo::Utility.request(CIPHER_WEBSITE + "top1000data/#{@@disease_list[omim_id][0]}.txt").gsub("\r","") unless File.exist?(filename)
+      File.open(filename, 'w:UTF-8').puts Bioinfo::Utility.request(CIPHER_WEBSITE + "top1000data/#{@@disease_list[omim_id][0]}.txt").gsub("\r","") unless File.exist?(filename)
       File.open(filename).each_with_index do |line, index|
         column = line.chomp.split("\t")
         gene = @@gene_list[column[0].to_i]
@@ -92,7 +106,7 @@ class Bioinfo::Databases::Cipher
   def export(path, with_title = true)
     FileUtils.mkdir_p(path)
     @genes.each do |key, value|
-      fout = File.open(File.expand_path("cipher_gene_#{key}.txt", path), "w")
+      fout = File.open(File.expand_path("cipher_gene_#{key}.txt", path), 'w:UTF-8')
       fout.puts "Approved Symbol\tCipher Rank\tCipher Score" if with_title
       value.each { |l| fout.puts l.join("\t") }
       fout.close
