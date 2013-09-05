@@ -51,8 +51,16 @@ class Bioinfo::Logger
   def initialize
     self.wd = File.expand_path("log", Bioinfo.wd)
     
+    # STDOUT
     @screen_logger = Logger.new(STDOUT)
+    @screen_logger.level = Logger::INFO
+    @screen_logger.formatter = proc { |severity, datetime, progname, msg|
+      "[#{severity}] #{progname}: #{msg}\n"
+    }
+
+    # Log file
     @file_logger = Logger.new(File.expand_path(Bioinfo::Utility.get_timestamp + ".log", self.wd))
+    @file_logger.level = Logger::DEBUG
   end
   # Transmit method call if std-lib Logger can respond to it
   def method_missing(symbol, *args, &block)

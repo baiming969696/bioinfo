@@ -16,9 +16,9 @@ end
 
 # issue
 desc "Run tests for current issue"
-task :issue do
+Rake::TestTask.new(:issue) do |t|
   current_issue = "test/databases/test_hgnc.rb"
-  system ("rake test TEST=" + current_issue)
+  t.test_files = FileList["test/test_bioinfo.rb", current_issue]
 end
 
 # clean_log

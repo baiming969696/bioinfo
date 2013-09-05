@@ -4,9 +4,6 @@ require 'test/unit'
 require 'shoulda-context'
 require 'bioinfo'
 
-# Keep screen clear
-Bioinfo.log.screen_logger.level = Logger::UNKNOWN
-
 class Bioinfo_Databases_HGNC_Test < Test::Unit::TestCase
   setup do
     @hgnc  = Bioinfo::Databases::HGNC.new(File.expand_path("data/samples/hgnc_sample.txt", Bioinfo.wd))
