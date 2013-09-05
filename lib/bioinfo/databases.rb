@@ -5,7 +5,8 @@
 module Bioinfo::Databases
   # Databases released by now
   DATABASES = {
-    HGNC:"bioinfo/databases/hgnc"
+    HGNC:"bioinfo/databases/hgnc",
+    Cipher:"bioinfo/databases/cipher",
   }
 
   Bioinfo::Utility.set_autoloaders(DATABASES, self)
