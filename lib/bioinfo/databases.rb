@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-# Namespace of all databases
+# Namespace of all classes who interactive with databases
 module Bioinfo::Databases
-  # Databases released by now
-  DATABASES = {
-    HGNC:"bioinfo/databases/hgnc",
-    Cipher:"bioinfo/databases/cipher",
-  }
-
-  Bioinfo::Utility.set_autoloaders(DATABASES, self)
+  Bioinfo::Utility.set_autoloaders(
+    {
+      HGNC:"bioinfo/databases/hgnc",
+      Cipher:"bioinfo/databases/cipher",
+      KEGG:"bioinfo/databases/kegg",
+    },
+    self
+  )
 end

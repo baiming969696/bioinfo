@@ -3,10 +3,10 @@
 
 # Namespace of all modules
 module Bioinfo::Modules
-  # Modules released by now
-  MODULES = {
-    WorkingDir:"bioinfo/modules/workingdir"
-  }
-
-  Bioinfo::Utility.set_autoloaders(MODULES, self)
+  Bioinfo::Utility.set_autoloaders(
+    {
+      WorkingDir:"bioinfo/modules/workingdir",
+    }, 
+    self
+  )
 end
