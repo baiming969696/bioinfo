@@ -32,6 +32,8 @@ require 'fileutils'
 class Bioinfo::Databases::Cipher
   extend Bioinfo::Modules::WorkingDir
 
+  # Current version of Cipher
+  VERSION = "0.1.0"
   # The url of Cipher website
   CIPHER_WEBSITE = "http://bioinfo.au.tsinghua.edu.cn/cipher/"
 

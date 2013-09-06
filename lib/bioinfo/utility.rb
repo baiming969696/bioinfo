@@ -35,10 +35,9 @@ module Bioinfo::Utility
   #
   # @param [String] url the url
   # @param [Hash] opts
-  # @option opts [String] :method 'get' or 'post'
-  # @option opts [String] :query a string
-  # @option opts [Fixnum] :timeout override the default timeout in {Bioinfo.opt_network}
-  #
+  # @option opts [String] :method 'get' or 'post', default is 'get'
+  # @option opts [String] :query a string, default is nil
+  # @option opts [Fixnum] :timeout override the default timeout in {Bioinfo.opt_network}, default is nil
   # @return [String] the response body
   #
   # @example
@@ -50,7 +49,7 @@ module Bioinfo::Utility
   #     })
   #
   # @raise Bioinfo::Utility::HTTPError Raised if a HTTP error was encountered
-  def request(url, opts = { :method => 'get', :query => '', :timeout => nil })
+  def request(url, opts = {})
     # Convert space into +
     url.gsub!(" ","+")
 
