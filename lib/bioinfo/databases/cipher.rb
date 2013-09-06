@@ -86,9 +86,11 @@ class Bioinfo::Databases::Cipher
     end
     # Generate @genes table
     @genes = Hash.new { |hash, key| hash[key] = [] }
-    omim_ids.flatten.uniq.each do |omim_id|
-      next unless /(?<omim_id>\d+)/ =~ omim_id.to_s
-      next unless @@disease_list[omim_id]
+    omim_ids.flatten.uniq.each do |_omim_id_|
+      unless /(?<omim_id>\d+)/ =~ _omim_id_.to_s && @@disease_list[omim_id]
+        Bioinfo.log.warn("Cipher") { "OMIM ID #{_omim_id_.inspect} discarded, since it doesn't exist in the disease list of Cipher" }
+        next
+      end
       filename = self.class.path_to(@@disease_list[omim_id][0] + ".txt")
       File.open(filename, 'w:UTF-8').puts Bioinfo::Utility.request(CIPHER_WEBSITE + "top1000data/#{@@disease_list[omim_id][0]}.txt").gsub("\r","") unless File.exist?(filename)
       File.open(filename).each_with_index do |line, index|
