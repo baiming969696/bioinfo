@@ -14,7 +14,15 @@ module Bioinfo::Utility
     include Singleton
   end
   # Error class representing HTTP errors
-  class HTTPError < RuntimeError; end
+  class HTTPError < RuntimeError
+    # HTTP error code
+    attr_reader :code
+    # @param [Fixnum] code HTTP error code
+    def initialize(code)
+      @code = code
+      super
+    end
+  end
 
   module_function
 
@@ -90,7 +98,7 @@ module Bioinfo::Utility
 
     # Check returned code
     response_code = response_code.to_i if response_code.is_a?(String)
-    raise HTTPError, "HTTP error #{response_code}, please check your Internet connetion and URL settings." if response_code != 200
+    raise HTTPError.new(response_code), "HTTP error #{response_code}, please check your Internet connetion and URL settings." if response_code != 200
 
     return response_body
   end
