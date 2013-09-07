@@ -38,6 +38,10 @@ module Bioinfo
 
   module_function
 
+  # Run Bioinfo in irb
+  def irb
+    system "irb -I #{File.dirname(__FILE__)} -r bioinfo -r irb/completion --simple-prompt"
+  end
   # Get the instance of Bioinfo::Logger
   # @return [Bioinfo::Logger]
   def log

@@ -4,7 +4,8 @@ $:.push File.expand_path("../lib", __FILE__)
 # irb
 desc "Run bioinfo in irb"
 task :irb do
-  system "irb -I #{File.expand_path("../lib", __FILE__)} -r bioinfo -r irb/completion --simple-prompt"
+  require 'bioinfo'
+  Bioinfo.irb
 end
 
 # test
