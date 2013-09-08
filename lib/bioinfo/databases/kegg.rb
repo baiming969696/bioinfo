@@ -64,16 +64,16 @@ class Bioinfo::Databases::KEGG
   DEFAULT_ORGANISM = "hsa"
   # KEGG identifer patterns
   PATTERNS = {
-    :pathway => {
-      :official => /^[a-z]{3}\d{5}$/, 
-      :alternative => /^\d{5}$/ 
+    pathway:{
+      official:/^[a-z]{3}\d{5}$/, 
+      alternative:/^\d{5}$/ 
     },
-    :organism => /^[a-z]{3}$/,
+    organism:/^[a-z]{3}$/,
   }
   # Downloading url
   URLS = {
-    :pathway_kgml => ->(pathway_id){ "http://rest.kegg.jp/get/#{pathway_id}/kgml" },
-    :pathway_list => ->(organism){ "http://rest.kegg.jp/list/pathway/#{organism}" },
+    pathway_kgml:->(pathway_id){ "http://rest.kegg.jp/get/#{pathway_id}/kgml" },
+    pathway_list:->(organism){ "http://rest.kegg.jp/list/pathway/#{organism}" },
   }
 
   # Get the pathways

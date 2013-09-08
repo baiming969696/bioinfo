@@ -22,15 +22,17 @@ Rake::TestTask.new(:issue) do |t|
 end
 
 # clear
-desc "Clean the log"
+desc "Clean the log and temporary files"
 task :clear do
-  FileUtils.rm_r("log") rescue nil
+  FileList["log", "tmp"].each do |d|
+    FileUtils.rm_r(d) rescue nil
+  end
 end
 
 # clean
 desc "Clean the directory"
 task :clean => :clear do
-  FileList[".yardoc", "doc", "tmp", "*.gem"].each do |d|
+  FileList[".yardoc", "doc", "*.gem"].each do |d|
     FileUtils.rm_r(d) rescue nil
   end
 end
