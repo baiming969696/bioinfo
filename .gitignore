@@ -1,8 +1,8 @@
 *.gem
 log
 tmp
-data/*
-!data/samples
+data
+*.frozen
 
 # YARD artifacts
 .yardoc

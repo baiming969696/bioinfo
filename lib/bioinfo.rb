@@ -28,6 +28,7 @@ module Bioinfo
   # autoloaders - classes
   self.autoload(:Logger, "bioinfo/logger")
   self.autoload(:Script, "bioinfo/script")
+  self.autoload(:DataFile, "bioinfo/datafile")
 
   extend Modules::WorkingDir
 
