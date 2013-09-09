@@ -50,7 +50,7 @@ module Bioinfo::DataFile
     rtn = opts[:without_name] ? [] : [opts[:name] || filename]
     File.open(filename).each do |line|
       next if line =~ /^#/
-      line =~ /","/ ? rtn<<line.chomp.split(/,\s?/) : rtn<<line.chomp
+      line =~ /,/ ? rtn<<line.chomp.split(/,\s?/) : rtn<<line.chomp
     end
     return rtn
   end
@@ -60,7 +60,7 @@ module Bioinfo::DataFile
     rtn = opts[:without_name] ? [] : [opts[:name] || filename]
     File.open(filename).each do |line|
       next if line =~ /^#/
-      rtn<<(line.chomp.split("\t").collect { |col| col =~ /","/ ? col.split(/,\s?/) : col })
+      rtn<<(line.chomp.split("\t").collect { |col| col =~ /,/ ? col.split(/,\s?/) : col })
     end
     return rtn      
   end
