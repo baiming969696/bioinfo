@@ -10,8 +10,17 @@ class Bioinfo::Script
   def run
     raise NotImplementedError, "Please overload"
   end
-  # Initailize instance varaibles
-  def initialize
-    self.wd = Bioinfo.path_to("tmp/" + self.class.to_s.scan(/(?<=::)\w+\z/)[0])
+  # Create a new instance
+  # @param [String] wd Working directory of this instance
+  def initialize(wd)
+    self.wd = wd
+  end
+  # @private
+  def inspect
+    "#<#{self.class} @wd=#{@wd}>"
+  end
+  # @private
+  def to_s
+    inspect
   end
 end
