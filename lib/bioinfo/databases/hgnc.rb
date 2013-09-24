@@ -91,7 +91,7 @@ class Bioinfo::Databases::HGNC
 end
 
 # HGNC object loads in any given table in HGNC format and builds hashes 
-# storing the convertion pairs, using HGNC ID as the primary key.
+# storing the conversion pairs, using HGNC ID as the primary key.
 #
 # == Mechanism
 # HGNC object stores several hashes to convert other identifiers from or into 
@@ -177,9 +177,9 @@ class Bioinfo::Databases::HGNC
     ensembl:"Ensembl ID(supplied by Ensembl)",
   }
 
-  # Convertion method family
+  # conversion method family
   # @overload converter_list
-  #   List all HGNC convertion methods
+  #   List all HGNC conversion methods
   #   @return [Hash]
   #   @example
   #     hgnc.converter_list
@@ -396,13 +396,13 @@ class Bioinfo::Databases::HGNC
 end
 
 class String
-  # Get the HGNC dictionary for convertion
+  # Get the HGNC dictionary for conversion
   # @return [Bioinfo::Databases::HGNC]
   def self.hgnc
     @hgnc
   end
   # @overload hgnc=(obj)
-  #   Set the HGNC dictionary for convertion
+  #   Set the HGNC dictionary for conversion
   #   @param [Bioinfo::Databases::HGNC] obj
   # @overload hgnc=(nil)
   #   Deregister the HGNC dictionary
