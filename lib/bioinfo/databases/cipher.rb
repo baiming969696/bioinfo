@@ -2,20 +2,22 @@
 # encoding: UTF-8
 require 'fileutils'
 
-# Cipher object gets top 1000 candidate genes for each disease (described by 
-# OMIM ID), which are sorted based on global network inference.
+# {Bioinfo::Databases::Cipher Bioinfo::Databases::Cipher} object gets top 
+# 1000 genes for each phenotype, described by OMIM ID), from {CIPHER_WEBSITE
+# Cipher website}.
 #
 # == Mechanism
-# The process of Cipher is simple and can be described by following steps:
-# * fetch the disease list and the gene list from {CIPHER_WEBSITE}
+# The process of {Bioinfo::Databases::Cipher Bioinfo::Databases::Cipher} is 
+# simple and can be described by following steps:
+# * fetch the disease list and the gene list
 # * search and download the corresponding Cipher gene table of each OMIM ID
 # * normalize gene identifiers to Approved Symbol and make them unique
 #   * delete ones without approved symbols
 #   * delete redundant symbols who rank lower
 #
-# Although Cipher itself is a computational framework, this process within 
-# Cipher class is absolutely a database searching, which makes me decide to 
-# put it under {Bioinfo::Databases Bioinfo::Databases}.
+# Different from {Bioinfo::Scripts::Cipher Bioinfo::Scripts::Cipher}, this 
+# process is absolutely a database searching, which makes the class named under
+# {Bioinfo::Databases Bioinfo::Databases}.
 #
 # == About Cipher
 # Correlating protein Interaction network and PHEnotype network to pRedict 
@@ -29,6 +31,9 @@ require 'fileutils'
 # Xuebing Wu, Rui Jiang, Michael Q. Zhang, Shao Li. 
 # Network-based global inference of human disease genes. 
 # Molecular Systems Biology, 2008, 4:189.}
+#
+# @see Bioinfo::Scripts::Cipher
+#
 class Bioinfo::Databases::Cipher
   extend Bioinfo::Modules::WorkingDir
 
