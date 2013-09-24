@@ -12,7 +12,7 @@
 #
 # == Example Usage
 # Set working path to the diretory where you store "mim2gene.txt" and 
-# "omim.txt" first.
+# "omim.txt" first. (Default is Bioinfo.path_to("data/omim"))
 #   Bioinfo::Databases::OMIM.wd = "/home/aidistan/download/"
 #
 # Load OMIM entries.
@@ -80,11 +80,11 @@ module Bioinfo::Databases::OMIM
           end
         end
       end
-
       File.binwrite(path_to("omim.bin"), Marshal.dump(omim))
     end
-
-    # For debug
-    Bioinfo.log.debug("OMIM") { omim.keys.size.to_s + " entries loaded." }
+    Bioinfo.log.debug("OMIM") { omim.keys.size.to_s + " entries loaded." } # For debug
+    return omim
   end
 end
+
+Bioinfo::Databases::OMIM.wd = Bioinfo.path_to("data/omim")
