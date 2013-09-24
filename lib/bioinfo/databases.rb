@@ -8,7 +8,11 @@ module Bioinfo::Databases
       HGNC:"bioinfo/databases/hgnc",
       Cipher:"bioinfo/databases/cipher",
       KEGG:"bioinfo/databases/kegg",
+      OMIM:"bioinfo/databases/omim",
     },
     self
   )
 end
+
+# Abbreviation
+Bioinfo::DB = Bioinfo::Databases

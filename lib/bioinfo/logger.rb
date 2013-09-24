@@ -22,6 +22,9 @@ class Bioinfo::Logger
     undef_method m
   end
 
+  # Max logs preserved
+  LOG_BOX_CAPACITY = 10
+
   # Include modules after undefed methods
   include Singleton
   include Bioinfo::Modules::WorkingDir
@@ -51,6 +54,10 @@ class Bioinfo::Logger
   def initialize
     self.wd = Bioinfo.path_to("log")
     
+    # Clear log box
+    box = Dir[self.path_to("*.log")].sort
+    0.upto(box.size - LOG_BOX_CAPACITY) { |i| File.delete(box[i]) }
+
     # STDOUT
     @screen_logger = Logger.new(STDOUT)
     @screen_logger.level = Logger::INFO
