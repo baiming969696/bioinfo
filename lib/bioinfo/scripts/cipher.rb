@@ -22,7 +22,7 @@
 #
 # @see Bioinfo::Databases::Cipher
 # @todo Embed matlab codes if possible
-class Bioinfo::Scripts::Cipher < Bioinfo::Script
+class Bioinfo::Scripts::Cipher < Bioinfo::Scripts::Script
   # @!group Interfaces
   # Setup input files. Directly return the path of exist files or do anything 
   # to create these input files. Check what should be returned according to 

@@ -2,7 +2,7 @@
 # encoding: UTF-8
 
 # Superclass of all script class
-class Bioinfo::Script
+class Bioinfo::Scripts::Script
   include Bioinfo::Modules::WorkingDir
   
   # Main entry for every script
