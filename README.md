@@ -42,6 +42,7 @@ Following is a incomplete list of __some__ __possible__ __differences__.
 	  for users.
 		* Use (part of) these sections to describe a class or module
 			* Overview (default) : briefly describe the purpose and the usage
+			* Prerequisite
 			* Mechanism
 			* Example Usage
 			* Other Supplementary : such as the brief introduction of the 

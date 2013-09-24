@@ -1,13 +1,14 @@
 History
 ===============
 
-### 0.0.3 2013-09-
-* 3 major enhacement
+### 0.0.3 2013-09-24
+* 4 major enhacement
 	* Bumped Bioinfo::Database::HGNC version to 0.2.0
 		* Used metaprogramming in Bioinfo::Database::HGNC
 		* Removd bioinfo/databases/hgnc/*
-	* Added Bioinfo::Scripts::Cipher
-	* Added Bioinfo::Scripts::KEGG
+	* Added Bioinfo::Databases::Cipher
+	* Added Bioinfo::Databases::KEGG
+	* Added Bioinfo::Databases::OMIM
 
 ### 0.0.2 2013-09-03
 * 2 major enhancement

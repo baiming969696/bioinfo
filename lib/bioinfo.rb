@@ -3,8 +3,6 @@
 
 # Top level namespace of Bioinfo
 #
-# == Example Usage
-#
 # === Initialization
 # It's unnecessary to initialize Bioinfo after requiring since Bioinfo follows
 # the principle "Convention over Configuration". 
@@ -13,7 +11,7 @@
 #
 # Sometimes custom initialization fits your need better. Write the process 
 # according to {Bioinfo.init} to make sure that anything left uninitiated will 
-# not effect your final result.
+# not affect your final result.
 #   require 'bioinfo'
 #
 #   Bioinfo.wd = "/home/aidistan/bioinfo"
@@ -33,7 +31,7 @@ module Bioinfo
   extend Modules::WorkingDir
 
 	# Current version of Bioinfo
-	VERSION = "0.0.2"
+	VERSION = "0.0.3"
   # Default working directory
   DEFAULT_WORKING_DIRECTORY = File.expand_path("../..",__FILE__)
 
