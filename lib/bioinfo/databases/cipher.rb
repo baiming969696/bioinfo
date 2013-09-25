@@ -15,10 +15,6 @@ require 'fileutils'
 #   * delete ones without approved symbols
 #   * delete redundant symbols who rank lower
 #
-# Different from {Bioinfo::Scripts::Cipher Bioinfo::Scripts::Cipher}, this 
-# process is absolutely a database searching, which makes the class named under
-# {Bioinfo::Databases Bioinfo::Databases}.
-#
 # == About Cipher
 # Correlating protein Interaction network and PHEnotype network to pRedict 
 # disease genes (CIPHER), is a computational framework that integrates human 
