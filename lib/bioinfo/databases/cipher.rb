@@ -32,8 +32,6 @@ require 'fileutils'
 # Network-based global inference of human disease genes. 
 # Molecular Systems Biology, 2008, 4:189.}
 #
-# @see Bioinfo::Scripts::Cipher
-#
 class Bioinfo::Databases::Cipher
   extend Bioinfo::Modules::WorkingDir
 

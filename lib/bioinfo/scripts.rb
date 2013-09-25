@@ -6,8 +6,6 @@ module Bioinfo::Scripts
   Bioinfo::Utility.set_autoloaders(
     {
       Script:"bioinfo/scripts/script",
-      MimMiner:"bioinfo/scripts/mimminer",
-      Cipher:"bioinfo/scripts/cipher",
     }, 
     self
   )

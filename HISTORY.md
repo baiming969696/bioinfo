@@ -1,6 +1,10 @@
 History
 ===============
 
+### 0.0.4 2013-
+* 1 minor enhancement
+	* Moved Bioinfo::Script to Bioinfo::Scripts::Script
+
 ### 0.0.3 2013-09-24
 * 4 major enhacement
 	* Bumped Bioinfo::Database::HGNC version to 0.2.0
